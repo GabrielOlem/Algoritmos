@@ -1,0 +1,89 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+template<class T>
+class node{
+    public:
+        T val;
+        node<T> *next;
+        node<T>(void){
+            this->next = nullptr;
+        }
+        node<T>(T v){
+            this->val = v;
+            this->next = nullptr;
+        }
+};
+
+template<class T>
+class fila{
+    private:
+        node<T> *head;
+        node<T> *tail;
+    public:
+        bool empty(void){
+            if(head -> next == nullptr){
+                return 1;
+            }
+            else{
+                return 0;
+            }
+        }
+        fila(){
+            head = new node<T>();
+            tail = head;
+        }
+        node<T> *create(T val){
+            node<T> *n = new node<T> (val);
+            return n;
+
+        }
+        node<T> *insert(node<T> *tail, T val){
+            tail->next = create(val);
+            return tail->next;
+        }
+        void push(T v){
+            tail = insert(tail, v);
+        }
+        T front(void){
+            return head->next->val;
+        }
+        node<T> *remove(node<T> *head, node<T> *tail){
+            node<T> *cur = head -> next;
+            head -> next = cur -> next;
+            if(head -> next == nullptr){
+                return head;
+            }
+            else{
+                return tail;
+            }
+            delete(cur);
+        }
+        void pop(void){
+            tail = remove(head, tail);
+        }
+};
+int main(void){
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    fila<int> q;
+    fila<string> que;
+    string a = "meu";
+    string b = " Deus";
+
+    que.push(a);
+    que.push(b);
+    while(!que.empty()){
+        cout << que.front();
+        que.pop();
+    }
+    cout << endl;
+    for(int i=0; i<5; i++){
+        q.push(i);
+    }
+    while(!q.empty()){
+        cout << q.front() << endl;
+        q.pop();
+    }
+    return 0;    
+}
