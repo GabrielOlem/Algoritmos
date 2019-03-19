@@ -1,0 +1,37 @@
+#include <cstdio>
+#include <bits/stdc++.h>
+using namespace std;
+int somatorio(string nome){
+    int temp = 0, ce = 0, index, aux;
+    for(int i=0; i<9; i++){
+        if(nome[i] != '?'){
+            temp += (10-i)*(nome[i] - '0');
+        }
+        else{
+            ce = 1;
+            index = (10 - i);
+        }
+    }
+    if(ce == 1){
+        int j;
+        aux = temp;
+        aux += (nome[9] - '0');
+        aux %= 11;
+        aux = 11 - aux;
+        for(j=0; j<10; j++){
+            if((index*j)% 11 == aux){
+                cout << j << endl;
+                break;
+            }
+        }
+        temp += (index*j);
+    }
+    return temp;
+}
+int main() {
+    string teste;
+    cin >> teste;
+    int retorno = somatorio(teste);
+    cout << retorno << endl;
+	return 0;
+}
