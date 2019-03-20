@@ -2,14 +2,72 @@
 #define endl '\n'
 
 using namespace std;
-
-struct node{
+struct Book{
     string codigo;
-    int qtd_andar, qtd_livro;
-    node *next;
+    int C;
+    int jmax;
+    int total_livro;
 };
-struct contador{
-    int prateleiras, quantidade, nucleo;
+struct Contador{
+    int livros;
+};
+template <class T>
+class Dvetor{
+    private:
+        T * v;
+        int logic;
+        int _size;
+    public:
+        Dvetor(void){
+            v = nullptr;
+            logic = 0;
+            _size = 0;
+        }
+        ~Dvetor(void){
+            delete[] v;
+        }
+        bool full(void){
+            if(_size == logic){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        T *change(void){
+            T *aux = new T[2*(_size) + 1];
+            for(int i=0; i<logic; i++){
+                aux[i] = v[i];
+            }
+            return aux;
+        }
+        T *change(int tam){
+            T *aux = new T[tam];
+            for(int i=0; i<logic; i++){
+                aux[i] = v[i];
+            }
+            return aux;
+        }
+        void push_back(T aux){
+            if(full()){
+                v = change();
+            }
+            v[logic] = aux;
+            logic++;
+        }
+        void pop_back(void){
+            logic--;
+        }
+        void size(){
+            return logic;
+        }
+        void resize(int tam){
+            v = change(tam);
+        }
+        T& operator[](int index){
+            return v[index];
+        }
+        
 };
 int somatorio(string nome){
     int temp = 0, ce = 0, index, aux;
@@ -43,90 +101,29 @@ int somatorio(string nome){
     }
     return temp;
 }
-void print(node* comeco){
-    node* i;
-    for(i=comeco; i->next!=NULL; i = i->next){
-        cout << i->next->codigo << " ";
-    }
-    puts("");
-}
-node* list_insert(node *cur, string val, int qtd){
-    node *h = new node;
-    h->codigo = val;
-    h->qtd_livro = qtd;
-    h->next = cur->next;
-    cur->next = h;
-    return cur;
-}
-node* list_ordenado(node *head, string numero, int qtd){
-    node *i = head;
-    while(1){
-        if(i -> next == NULL){
-            i = list_insert(i, numero, qtd);
-            return head;
-        }
-        if(i->next->codigo == numero){
-            i->next->qtd_livro += qtd;
-            return head;
-        }
-        if(numero > i -> codigo && numero < i -> next -> codigo){
-            i = list_insert(i, numero, qtd);
-            return head;
-        }
-        
-        i = i->next;
-    }
-}
-contador* rehashing(contador *original, int* tamanho){
-    int aux = 2*(*tamanho) + 1;
-    contador *maior = new contador[aux];
-    for(int i=0; i<aux; i++){
-        maior[i].prateleiras = -1;
-        maior[i].quantidade = -1;
-    }
-    for(int i=0; i<*tamanho; i++){
-        if(original[i].prateleiras != -1){
-            int index_novo = original[i].nucleo % aux;
-            for(int j=0; j<aux; j++){
-                index_novo = (original[i].nucleo + j) % aux;
-                if(maior[index_novo].prateleiras == -1){
-                    maior[index_novo] = original[i];
-                    break;
-                }
-            }
-        }
-    }
-    *tamanho = 2*(*tamanho) + 1;
-    return maior;
-}
 int main(int argc, char *argv[]) {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int m, q, i, j, index_contagem = 0, pos_contagem;
     int qtd_contagem = 0, tam_contagem = 1;
     cin >> m >> q;
-    contador *contagem = new contador[1];
-    contagem[0].prateleiras = -1;
-    contagem[0].quantidade = -1;
-    node ***andar = new node**[m];
-    for(i=0; i<m; i++){
-        andar[i] = new node*[11];
-        for(j=0; j<11; j++){
-            andar[i][j] = new node;
-            andar[i][j] -> next = NULL;
-            andar[i][j] -> qtd_andar = 0;
-        }
+    Dvetor<Dvetor<Dvetor<Book>>> andar;
+    Dvetor<Dvetor<Contador>> frequencia;
+    andar.resize(m);
+    frequencia.resize(m);
+    for(int i=0; i<m; i++){
+        andar[i].resize(11);
     }
-    string funcao, codigo;
+    Book livro;
+    string funcao;
     int qtd, nucleo, estante, level;
     while(funcao != "END"){
         cin >> funcao;
         if(funcao != "END"){
-            cin >> codigo;
+            cin >> livro.codigo;
             if(funcao == "ADD"){
-                cin >> qtd;
-                int cheio = 0, atual;
-                nucleo = somatorio(codigo);
+                cin >> livro.C;
+                nucleo = somatorio(livro.codigo);
                 estante = nucleo % m;
                 if(codigo[9] == 'x'){
                     level = 10;
@@ -134,35 +131,7 @@ int main(int argc, char *argv[]) {
                 else{
                     level = (codigo[9] - '0');
                 }
-                pos_contagem = nucleo % tam_contagem;
-                if(qtd_contagem/tam_contagem >= 0.5){
-                    contagem = rehashing(contagem, &tam_contagem);
-                }
-                if(qtd + andar[estante][level] -> qtd_andar <= q){
-                    andar[estante][level] = list_ordenado(andar[estante][level], codigo, qtd);
-                    andar[estante][level] -> qtd_andar += qtd;
-                }
-                else{
-                    andar[estante][level] = list_ordenado(andar[estante][level], codigo, q - andar[estante][level]->qtd_andar);
-                    qtd -= (q - andar[estante][level]->qtd_andar);
-                    andar[estante][level] -> qtd_andar += (q - andar[estante][level]->qtd_andar);
-                    for(int j=1; j<11; j++){
-                        atual = (level + j) % 11;
-                        if(qtd + andar[estante][atual] -> qtd_andar <= q){
-                            andar[estante][atual] = list_ordenado(andar[estante][atual], codigo, qtd);
-                            andar[estante][atual] -> qtd_andar += qtd;
-                            qtd = 0;
-                        }
-                        else{
-                            andar[estante][atual] = list_ordenado(andar[estante][atual], codigo, q - andar[estante][atual]->qtd_andar);
-                            qtd -= (q - andar[estante][atual]->qtd_andar);
-                            andar[estante][atual] -> qtd_andar += (q - andar[estante][atual]->qtd_andar);
-                        }
-                        if(qtd == 0){
-                            break;
-                        }
-                    }
-                }
+                
                 cout << estante << endl;
             }
         }
