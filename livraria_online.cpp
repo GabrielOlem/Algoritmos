@@ -9,7 +9,7 @@ struct node{
     node *next;
 };
 struct contador{
-    int prateleiras, quantidade;
+    int prateleiras, quantidade, nucleo;
 };
 int somatorio(string nome){
     int temp = 0, ce = 0, index, aux;
@@ -77,16 +77,37 @@ node* list_ordenado(node *head, string numero, int qtd){
         i = i->next;
     }
 }
-
+contador* rehashing(contador *original, int* tamanho){
+    int aux = 2*(*tamanho) + 1;
+    contador *maior = new contador[aux];
+    for(int i=0; i<aux; i++){
+        maior[i].prateleiras = -1;
+        maior[i].quantidade = -1;
+    }
+    for(int i=0; i<*tamanho; i++){
+        if(original[i].prateleiras != -1){
+            int index_novo = original[i].nucleo % aux;
+            for(int j=0; j<aux; j++){
+                index_novo = (original[i].nucleo + j) % aux;
+                if(maior[index_novo].prateleiras == -1){
+                    maior[index_novo] = original[i];
+                    break;
+                }
+            }
+        }
+    }
+    *tamanho = 2*(*tamanho) + 1;
+    return maior;
+}
 int main(int argc, char *argv[]) {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     int m, q, i, j, index_contagem = 0, pos_contagem;
-    double qtd_contagem = 0, tam_contagem = 1;
+    int qtd_contagem = 0, tam_contagem = 1;
     cin >> m >> q;
     contador *contagem = new contador[1];
-    contagem.prateleiras = -1;
-    contagem.quantidade = -1;
+    contagem[0].prateleiras = -1;
+    contagem[0].quantidade = -1;
     node ***andar = new node**[m];
     for(i=0; i<m; i++){
         andar[i] = new node*[11];
