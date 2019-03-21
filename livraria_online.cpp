@@ -138,6 +138,15 @@ void busca_modif(Dvetor<Book> &andar, Book livro, int qtd){
         andar[pos].total_livro += qtd;
     }
 }
+void deletar(Dvetor<Book> &andar, Book livro){
+    for(int i=1; i<andar.size(); i++){
+        if(andar[i - 1].codigo == livro.codigo){
+            Book aux = andar[i - 1];
+            andar[i - 1] = andar[i];
+            andar[i] = aux;
+        }
+    }
+}
 int main(int argc, char *argv[]) {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
@@ -295,14 +304,19 @@ int main(int argc, char *argv[]) {
                     andar[estante][(level + auxi + prateleiras)%11][pos3].total_livro -= qtd;
                     if(andar[estante][(level + auxi + prateleiras)%11][pos3].total_livro == 0){
                         andar[estante][(level + auxi) % 11][pos2].jmax--;
-                        for(int i=1; i<andar[estante][(level + auxi + prateleiras) % 11].size(); i++){
-                            if(andar[estante][(level + auxi + prateleiras) % 11][i - 1].codigo == livro.codigo){
-                                Book aux = andar[estante][(level + auxi + prateleiras) % 11][i - 1];
-                                andar[estante][(level + auxi + prateleiras) % 11][i - 1] = andar[estante][(level + auxi + prateleiras) % 11][i];
-                                andar[estante][(level + auxi + prateleiras) % 11][i] = aux;
-                            }
-                        }
+                        deletar(andar[estante][(level + auxi + prateleiras)%11], livro);
                         andar[estante][(level + auxi + prateleiras) % 11].pop_back();
+                    }
+                }
+                else{//Nao deu para tirar tudo do (level + auxi + prateleiras)
+                    qtd -= andar[estante][(level + auxi + prateleiras) % 11][pos3].total_livro;
+                    frequencia[estante][(level + auxi + prateleiras)%11] -= andar[estante][(level + auxi + prateleiras)%11][pos3].total_livro;
+                    andar[estante][(level + auxi + prateleiras)%11][pos3].total_livro = 0;
+                    deletar(andar[estante][(level + auxi + prateleiras)%11], livro);
+                    andar[estante][(level + auxi) % 11][pos2].jmax--;
+                    prateleiras = andar[estante][(level + auxi) % 11][pos2].jmax;
+                    for(int j=prateleiras; j>=0; j--){
+                        
                     }
                 }
                 prateleiras = andar[estante][(level + auxi) % 11][pos2].jmax;
