@@ -292,6 +292,7 @@ int main(int argc, char *argv[]) {
                 int prateleiras = andar[estante][(level + auxi) % 11][pos2].jmax;
                 int pos3 = busca_binaria(andar[estante][(level + auxi + prateleiras) % 11], livro.codigo, andar[estante][(level + auxi + prateleiras) % 11].size());
                 if(andar[estante][(level + auxi + prateleiras)%11][pos3].total_livro - qtd >= 0){
+                    frequencia[estante][(level + auxi + prateleiras)%11] -= qtd;
                     andar[estante][(level + auxi + prateleiras)%11][pos3].total_livro -= qtd;
                     if(andar[estante][(level + auxi + prateleiras)%11][pos3].total_livro == 0){
                         andar[estante][(level + auxi) % 11][pos2].jmax--;
