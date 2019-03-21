@@ -315,8 +315,29 @@ int main(int argc, char *argv[]) {
                     deletar(andar[estante][(level + auxi + prateleiras)%11], livro);
                     andar[estante][(level + auxi) % 11][pos2].jmax--;
                     prateleiras = andar[estante][(level + auxi) % 11][pos2].jmax;
-                    for(int j=prateleiras; j>=0; j--){
-                        
+                    if(qtd != 0){
+                        for(int j=prateleiras; j>-1; j--){
+                            int pos4 = busca_binaria(andar[estante][(level + auxi + j) % 11], livro.codigo, andar[estante][(level + auxi + j) % 11].size());
+                            if(andar[estante][(level + auxi + j) % 11][pos4].total_livro - qtd >= 0){
+                                frequencia[estante][(level + auxi + j) % 11] -= qtd;
+                                andar[estante][(level + auxi + j) % 11][pos4].total_livro -= qtd;
+                                if(andar[estante][(level + auxi + j) % 11][pos4].total_livro == 0){
+                                    andar[estante][(level + auxi) % 11][pos2].jmax--;
+                                    deletar(andar[estante][(level + auxi + j) % 11], livro);
+                                    andar[estante][(level + auxi + j) % 11].pop_back();
+                                }
+                            }
+                            else{
+                                qtd -= andar[estante][(level + auxi + j) % 11][pos4].total_livro;
+                                frequencia[estante][(level + auxi + j)%11] -= andar[estante][(level + auxi + j)%11][pos4].total_livro;
+                                andar[estante][(level + auxi + j)%11][pos4].total_livro = 0;
+                                deletar(andar[estante][(level + auxi + j)%11], livro);
+                                andar[estante][(level + auxi) % 11][pos2].jmax--;
+                            }
+                            if(qtd == 0){
+                                break;
+                            }
+                        }
                     }
                 }
                 prateleiras = andar[estante][(level + auxi) % 11][pos2].jmax;
