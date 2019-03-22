@@ -176,7 +176,8 @@ int main(int argc, char *argv[]) {
                 estante = nucleo % m;
                 //cout << estante << endl;
                 if(livro.codigo[9] == '?'){
-                    if(estante == 10){
+                    level = (11 - (nucleo)%11)%11;
+                    if(level == 10){
                         livro.codigo[9] = 'x';
                     }
                     else{
@@ -261,7 +262,8 @@ int main(int argc, char *argv[]) {
                 nucleo = somatorio(livro.codigo);
                 estante = nucleo % m;
                 if(livro.codigo[9] == '?'){
-                    if(estante == 10){
+                    level = (11 - (nucleo)%11)%11;
+                    if(level == 10){
                         livro.codigo[9] = 'x';
                     }
                     else{
@@ -309,7 +311,8 @@ int main(int argc, char *argv[]) {
                 nucleo = somatorio(livro.codigo);
                 estante = nucleo % m;
                 if(livro.codigo[9] == '?'){
-                    if(estante == 10){
+                    level = (11 - (nucleo)%11)%11;
+                    if(level == 10){
                         livro.codigo[9] = 'x';
                     }
                     else{
