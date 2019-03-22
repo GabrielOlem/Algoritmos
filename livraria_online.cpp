@@ -125,7 +125,7 @@ int busca_binaria(Dvetor<Book> &andar, string codigo, int qtd){
 int busca_binariaf(Dvetor<Book> &andar, string codigo, int qtd){
     int l = 0;
     int r = qtd - 1;
-    int h;
+    int h = 0;
     while(l <= r){
         h = (l + r)/2;
         if(andar[h].codigo == codigo){
@@ -185,6 +185,16 @@ void deletar(Dvetor<Book> &andar, Book livro){
         }
     }
 }
+void muda(Dvetor<Book> &livros_diferentes, Book livro, int pos){
+    for(int i=pos; i<livros_diferentes.size(); i++){
+        if(livros_diferentes[i].codigo > livro.codigo){
+            Book aux = livro;
+            livro = livros_diferentes[i];
+            livros_diferentes[i] = aux;
+        }
+    }
+    livros_diferentes.push_back(livro);
+}
 int main(int argc, char *argv[]) {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
@@ -192,8 +202,6 @@ int main(int argc, char *argv[]) {
     cin >> m >> q;
     Dvetor<Dvetor<Dvetor<Book> > > andar;
     Dvetor<Book> livros_diferentes;
-    Book defaulta;
-    livros_diferentes.push_back(defaulta);
     int inserir = -1;
     int aux;
     andar.resize(m);
@@ -215,22 +223,12 @@ int main(int argc, char *argv[]) {
             cin >> livro.codigo;
             if(funcao == "ADD"){
                 cin >> qtd;
-                /*
-                int pos = busca_binariaf(livros_diferentes, livro.codigo, livros_diferentes.size());
-                if(livros_diferentes[pos].codigo == livro.codigo){
-                    livros_diferentes[pos].total_livro += qtd;
-                }
-                else{
-                    daquele jeitos
-                }
-                */
                 int noh = 0;
                 int total = qtd;
                 nucleo = somatorio(livro.codigo);
                 estante = nucleo % m;
-                //cout << nucleo << endl;
                 if(livro.codigo[9] == '?'){
-                    level = (11 - (nucleo)%11)%11;
+                    level = (11 - (nucleo)%11);
                     if(level == 10){
                         livro.codigo[9] = 'x';
                     }
@@ -244,14 +242,23 @@ int main(int argc, char *argv[]) {
                 else{
                     level = (livro.codigo[9] - '0');
                 }
-                //cout << livro.codigo << endl;
+                int pos = busca_binariaf(livros_diferentes, livro.codigo, livros_diferentes.size());
+                if(livros_diferentes.size() == 0){
+                    livro.total_livro = qtd;
+                    livro.jmax = 1;
+                    livros_diferentes.push_back(livro);
+                }
+                else if(livros_diferentes[pos].codigo == livro.codigo){
+                    livros_diferentes[pos].total_livro += qtd;
+                }
+                else{
+                    livro.total_livro = qtd;
+                    muda(livros_diferentes, livro, pos);
+                }
+                int prateleiras = 1;
                 if(qtd + frequencia[estante][level] <= q){//Foi no primeiro
                     busca_modif(andar[estante][level], livro, qtd);
                     frequencia[estante][level] += qtd;
-                    int pos = busca_binaria(andar[estante][level], livro.codigo, andar[estante][level].size());
-                    if(pos != -1){
-                        andar[estante][level][pos].jmax = 0;
-                    }
                 }
                 else{//Não coube no primeiro
                     if(q != frequencia[estante][level]){
@@ -272,51 +279,21 @@ int main(int argc, char *argv[]) {
                             frequencia[estante][atual] = q;
                         }
                         if(qtd == 0){
-                            int pos = busca_binaria(andar[estante][level], livro.codigo, andar[estante][level].size());
-                            if(pos != -1){
-                                andar[estante][level][pos].jmax = j;
-                            }
-                            else{
-                                for(int i=1;i<11;i++){
-                                    if(busca_binaria(andar[estante][(level+i)%11],livro.codigo, andar[estante][level].size()) != -1) {
-                                        andar[estante][level][pos].jmax = j - noh; 
-                                        break;
-                                    }
-                                    else{
-                                        noh++;
-                                    }
-                                }
-                            } 
+                            prateleiras = j + 1;
                             break;
                         }
-                    }  
-                }
-                int auxi = 0;
-                int pos2 = busca_binaria(andar[estante][level], livro.codigo, andar[estante][level].size());
-                while(pos2 == -1){
-                    auxi++;
-                    pos2 = busca_binaria(andar[estante][(level + auxi) % 11], livro.codigo, andar[estante][(level + auxi) % 11].size());
-                }
-                int prateleiras = andar[estante][(level + auxi) % 11][pos2].jmax;
-                total = 0;
-                int teste;
-                for(int i = 0; i<11; i++){
-                    pos2 = busca_binaria(andar[estante][(level + i + auxi) % 11], livro.codigo, andar[estante][(level + i + auxi) % 11].size());
-                    if(pos2 == -1){
-                        teste = i;
-                        break;
-                    }
-                    else{
-                        total += andar[estante][(level + i + auxi) % 11][pos2].total_livro;
                     }
                 }
-                cout << estante << " " << total << " " << teste << endl;        
+                pos = busca_binaria(livros_diferentes, livro.codigo, livros_diferentes.size());
+                
+                livros_diferentes[pos].jmax = prateleiras;
+                cout << estante << ' ' << livros_diferentes[pos].total_livro << ' ' << livros_diferentes[pos].jmax << endl;  
             }
             else if(funcao == "QRY"){
                 nucleo = somatorio(livro.codigo);
                 estante = nucleo % m;
                 if(livro.codigo[9] == '?'){
-                    level = (11 - (nucleo)%11)%11;
+                    level = (11 - (nucleo)%11);
                     if(level == 10){
                         livro.codigo[9] = 'x';
                     }
@@ -330,34 +307,12 @@ int main(int argc, char *argv[]) {
                 else{
                     level = (livro.codigo[9] - '0');
                 }
-                //cout << livro.codigo << endl;
-                int auxi = 0;
-                int pos2 = busca_binaria(andar[estante][level], livro.codigo, andar[estante][level].size());
-                if(pos2 == -1){
-                    for(auxi = 1; auxi < 11; auxi++){
-                        pos2 = busca_binaria(andar[estante][(level + auxi) % 11], livro.codigo, andar[estante][(level + auxi) % 11].size());
-                        if(pos2 != -1){
-                            break;
-                        }
-                    }
-                }
-                if(pos2 == -1){
+                int pos = busca_binaria(livros_diferentes, livro.codigo, livros_diferentes.size());
+                if(livros_diferentes[pos].total_livro == 0){
                     cout << estante << " 0 0" << endl;
                 }
                 else{
-                    int prateleiras = andar[estante][(level + auxi) % 11][pos2].jmax;
-                    int total = 0, teste;
-                    for(int i = 0; i<11; i++){
-                        pos2 = busca_binaria(andar[estante][(level + i + auxi) % 11], livro.codigo, andar[estante][(level + i + auxi) % 11].size());
-                        if(pos2 == -1){
-                            teste = i;
-                            break;
-                        }
-                        else{
-                            total += andar[estante][(level + i + auxi) % 11][pos2].total_livro;
-                        }
-                    }
-                    cout << estante << ' ' << total << ' ' << teste << endl;
+                    cout << estante << ' ' << livros_diferentes[pos].total_livro << ' ' << livros_diferentes[pos].jmax << endl;
                 }
             }
             else if(funcao == "REM"){
