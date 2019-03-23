@@ -144,7 +144,11 @@ int busca_binariaf(Dvetor<Book> &andar, string codigo){
 }
 void busca_modif(Dvetor<Book> &andar, Book livro, int qtd){
     int pos = busca_binariaf(andar, livro.codigo);
-    if(andar[pos].codigo != livro.codigo){
+    if(andar.size() == 0){
+        livro.total_livro = qtd;
+        andar.push_back(livro);
+    }
+    else if(andar[pos].codigo != livro.codigo){
         livro.total_livro = qtd;
         for(int i=pos; i<andar.size(); i++){
             if(andar[i].codigo > livro.codigo){
@@ -176,16 +180,12 @@ int main(int argc, char *argv[]) {
     cin >> m >> q;
     Dvetor<Dvetor<Dvetor<Book> > > andar;
     Dvetor<Dvetor<Book> > livros_diferentes;
-    Book depenalti;
-    int inserir = -1;
-    int aux;
     andar.resize(m);
     livros_diferentes.resize(m);
     int frequencia[m][11];
     for(int i=0; i<m; i++){
         andar[i].resize(11);
         for(int j=0; j<11; j++){
-        	andar[i][j].push_back(depenalti);
             frequencia[i][j] = 0;
         }
     }
@@ -325,4 +325,4 @@ int main(int argc, char *argv[]) {
         }
     }
     return 0;
-}   
+}
