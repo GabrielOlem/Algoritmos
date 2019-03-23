@@ -338,15 +338,12 @@ int main(int argc, char *argv[]) {
                     andar[estante][atual][pos3].total_livro -= qtd;
                     if(andar[estante][atual][pos3].total_livro == 0){
                         prateleiras--;
-                        deletar(andar[estante][atual], livro);
-                        andar[estante][atual].pop_back();
                     }
                 }
                 else{//Nao deu para tirar tudo do (level + auxi + prateleiras)
                     qtd -= andar[estante][atual][pos3].total_livro;
                     frequencia[estante][atual] -= andar[estante][atual][pos3].total_livro;
                     andar[estante][atual][pos3].total_livro = 0;
-                    deletar(andar[estante][atual], livro);
                     prateleiras--;
                     for(int j=prateleiras; j>-1; j--){
                         atual = (level + auxi + j - 1) % 11;
@@ -357,15 +354,12 @@ int main(int argc, char *argv[]) {
                             qtd = 0;
                             if(andar[estante][atual][pos4].total_livro == 0){
                                 prateleiras--;
-                                deletar(andar[estante][atual], livro);
-                                andar[estante][atual].pop_back();
                             }
                         }
                         else{
                             qtd -= andar[estante][atual][pos4].total_livro;
                             frequencia[estante][atual] -= andar[estante][atual][pos4].total_livro;
                             andar[estante][atual][pos4].total_livro = 0;
-                            deletar(andar[estante][atual], livro);
                             prateleiras--;
                         }
                         if(qtd == 0){
