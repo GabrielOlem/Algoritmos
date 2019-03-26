@@ -10,7 +10,7 @@ struct Book{
     int comeco;
     Book(){
         comeco = 0;
-    	codigo = "-1";
+        codigo = "-1";
         jmax = 0;
         total_livro = 0; 
     }
@@ -77,11 +77,13 @@ class Dvetor{
         }
         
 };
-int somatorio(string &nome){
+int somatorio(string &nome, int *soma, int *outra){
     int temp = 0, ce = 0, index = 0, aux;
     for(int i=0; i<9; i++){
         if(nome[i] != '?'){
+            *soma += (i + 1)*(nome[i] - '0');
             temp += (10-i)*(nome[i] - '0');
+            *outra += (nome[i] - '0');
         }
         else{
             ce = 1;
@@ -105,6 +107,8 @@ int somatorio(string &nome){
         }
         nome[10 - index] = (j + '0');
         temp += index*j;
+        *soma += (11 - index)*(nome[10 - index] - '0');
+        *outra += (nome[10 - index] - '0');
     }
     return temp;
 }
@@ -216,13 +220,14 @@ int main(int argc, char *argv[]) {
     }
     Book livro;
     string funcao;
-    int qtd, nucleo, estante, level, soma, outra;
+    int qtd, nucleo, estante, level, soma = 0, outra = 0;
     while(funcao != "END"){
         cin >> funcao;
         if(funcao != "END"){
+            soma = 0, outra = 0;
             int pos = 0;
             cin >> livro.codigo;
-            nucleo = somatorio(livro.codigo);
+            nucleo = somatorio(livro.codigo, &soma, &outra);
             estante = nucleo % m;
             if(livro.codigo[9] == '?'){
                 level = (11 - (nucleo)%11)%11;
@@ -239,8 +244,6 @@ int main(int argc, char *argv[]) {
             else{
                 level = (livro.codigo[9] - '0');
             }
-            soma = somar(livro.codigo);
-            outra = outr(livro.codigo);
             if(funcao == "ADD"){
                 cin >> qtd;
                 if(livros_diferentes[estante][level][outra][soma].size() == 0){
