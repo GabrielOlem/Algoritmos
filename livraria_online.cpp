@@ -181,20 +181,6 @@ void muda(Dvetor<Book> &livros_diferentes, Book &livro, int pos){
     }
     livros_diferentes.push_back(livro);
 }
-int somar(string &nome){
-    int num = 0;
-    for(int i=0; i<9; i++){
-        num += (i + 1)*(nome[i] - '0');
-    }
-    return num;
-}
-int outr(string &nome){
-    int num = 0;
-    for(int i=0; i<9; i++){
-        num += (nome[i] - '0');
-    }
-    return num;
-}
 int main(int argc, char *argv[]) {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
