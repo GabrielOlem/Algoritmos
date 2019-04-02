@@ -66,6 +66,13 @@ node *bst_delete_min(node *root, int valor){
         return root;
     }
 }
+node *minValueNode(node *root){
+    node *current = root;
+    while(current -> left != NULL){
+        current = current -> left;
+    }
+    return current;
+}
 node *bst_delete(node *root, int v){
     if(root == NULL){
         return NULL;
@@ -90,7 +97,9 @@ node *bst_delete(node *root, int v){
             return r;
         }
         else{
-            root->right = bst_delete_min(root->right, root->val);
+            node *temp = minValueNode(root -> right);
+            root -> val = temp -> val;
+            root -> right = bst_delete(root -> right, root -> val);
             return root;
         }
     }
@@ -103,6 +112,15 @@ int main(int argc, char *argv[]) {
         cin >> valor;
         if(valor != -1){
             root = bst_insert(root, valor);
+            in_order(root);
+            cout << endl;
+        }
+    }
+    valor = 0;
+    while(valor != -1){
+        cin >> valor;
+        if(valor != -1){
+            root = bst_delete(root, valor);
             in_order(root);
             cout << endl;
         }
