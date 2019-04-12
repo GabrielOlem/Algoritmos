@@ -62,6 +62,12 @@ class Dvetor{
         T& operator[](int index){
             return v[index];
         }
+        void print(){
+            for(int i=0; i<size(); i++){
+                cout << v[i] << ' ';
+            }
+            cout << endl;
+        }
         
 };
 void bubble_up(Dvetor<int> &h, int i){
@@ -78,20 +84,54 @@ void heap_insert(Dvetor<int> &h, int valor){
     h.push_back(valor);
     bubble_up(h, h.size() - 1);
 }
+void heapify(Dvetor<int> &h, int index){
+    int r = 2*index + 2;
+    int l = 2*index + 1;
+    int m = index;
+    cout << h[l] << ' ' << h[r] << ' ' << h[m] << endl;
+    if(l < h.size() && h[l] <= h[m]){
+        m = l;
+    }
+    if(r < h.size() && h[r] <= h[m]){
+        m = r;
+    }
+    if(m != index){
+        int aux = h[m];
+        h[m] = h[index];
+        h[index] = aux;
+        heapify(h, m);
+    }
+}
+void heap_extract(Dvetor<int> &h){
+    h.pop_back();
+    int aux = h[0];
+    h[0] = h[h.size()];
+    h[h.size()] = aux;
+    heapify(h, 0);
+}
+void build_heap(Dvetor<int> &h, int size){
+    for(int i = floor(size/2) - 1; i>=0; i--){
+        heapify(h, i);
+    }
+}
 int main(int argc, char *argv[]) {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     Dvetor<int> vetor;
     int valor;
-    cout << vetor.size();
     while(valor != -1){
         cin >> valor;
         if(valor != -1){
-            heap_insert(vetor, valor);
+            vetor.push_back(valor);
         }
     }
-    for(int j=0; j<vetor.size(); j++){
-        cout << vetor[j] << ' ';
+    vetor.print();
+    cout << vetor.size() << endl;
+    build_heap(vetor, vetor.size() - 1);
+    vetor.print();
+    while(vetor.size() != 0){
+        //heap_extract(vetor);
+        //vetor.print();
     }
     return 0;
 }
