@@ -88,11 +88,10 @@ void heapify(Dvetor<int> &h, int index){
     int r = 2*index + 2;
     int l = 2*index + 1;
     int m = index;
-    cout << h[l] << ' ' << h[r] << ' ' << h[m] << endl;
-    if(l < h.size() && h[l] <= h[m]){
+    if(l < h.size() && h[l] >= h[m]){
         m = l;
     }
-    if(r < h.size() && h[r] <= h[m]){
+    if(r < h.size() && h[r] >= h[m]){
         m = r;
     }
     if(m != index){
@@ -114,24 +113,32 @@ void build_heap(Dvetor<int> &h, int size){
         heapify(h, i);
     }
 }
+void heap_sort(Dvetor<int> &h){
+    cout << h.size() << endl;
+    build_heap(h, h.size());
+    int size = h.size();
+    for(int i=0; i<size; i++){
+        heap_extract(h);
+    }
+}
 int main(int argc, char *argv[]) {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     Dvetor<int> vetor;
+    int ah = 0;
     int valor;
     while(valor != -1){
         cin >> valor;
         if(valor != -1){
+            ah++;
             vetor.push_back(valor);
         }
     }
     vetor.print();
-    cout << vetor.size() << endl;
-    build_heap(vetor, vetor.size() - 1);
-    vetor.print();
-    while(vetor.size() != 0){
-        //heap_extract(vetor);
-        //vetor.print();
+    heap_sort(vetor);
+    for(int i=0; i<ah; i++){
+        cout << vetor[i] << ' ';
     }
+    cout << endl;
     return 0;
 }
