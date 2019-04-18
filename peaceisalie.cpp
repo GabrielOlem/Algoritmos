@@ -169,7 +169,7 @@ void bubble_up(Dvetor<soldier> &h, int i, int criterio, Dvetor<info> &ind){
         p = floor((i - 1)/2);
     }
 }
-void heap_insert(Dvetor<soldier> &h, soldier valor, int criterio, Dvetor<info> &ind){
+void heap_insert(Dvetor<soldier> &h, soldier &valor, int criterio, Dvetor<info> &ind){
     h.push_back(valor);
     bubble_up(h, h.size() - 1, criterio, ind);
 }
@@ -208,15 +208,6 @@ void build_heap(Dvetor<soldier> &h, int size, int criterio, Dvetor<info> &ind){
         heapify(h, i, criterio, ind);
     }
 }
-void updateHeap(Dvetor<soldier> &soldados, Dvetor<info> &ind, int index, int criterio){
-    int p = floor((index - 1)/2);
-    if(compare(soldados[index], soldados[p], criterio)){
-        bubble_up(soldados, index, criterio, ind);
-    }
-    else{
-        heapify(soldados, index, criterio, ind);
-    }
-}
 int main(int argc, char *argv[]) {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
@@ -236,8 +227,6 @@ int main(int argc, char *argv[]) {
             esquadroes[i].soldiers.push_back(soldado);
             indices.alocate(esquadroes[i].soldiers[j], j, i);
         }
-    }
-    for(int i=0; i<squads; i++){
         build_heap(esquadroes[i].soldiers, esquadroes[i].soldiers.size(), esquadroes[i].priority, indices);
     }
     string funcao;
@@ -246,10 +235,7 @@ int main(int argc, char *argv[]) {
         if(funcao != "END"){
             if(funcao == "ADD"){
                 int esq;
-                cin >> esq;
-                cin >> soldado.id;
-                cin >> soldado.service_time;
-                cin >> soldado.rank;
+                cin >> esq >> soldado.id >> soldado.service_time >> soldado.rank;
                 indices.alocate(soldado, esquadroes[esq].soldiers.size(), esq);
                 heap_insert(esquadroes[esq].soldiers, soldado, esquadroes[esq].priority, indices);
                 cout << esquadroes[esq].soldiers[0].id << ' ' << esquadroes[esq].soldiers[0].service_time << ' ' << esquadroes[esq].soldiers[0].rank << endl;
@@ -263,7 +249,13 @@ int main(int argc, char *argv[]) {
                 int s = indices[id].squad;
                 esquadroes[s].soldiers[index].service_time = ts;
                 esquadroes[s].soldiers[index].rank = r;
-                updateHeap(esquadroes[s].soldiers, indices, index, esquadroes[s].priority);
+                int p = floor((index - 1)/2);
+                if(compare(esquadroes[s].soldiers[index], esquadroes[s].soldiers[p], esquadroes[s].priority)){
+                    bubble_up(esquadroes[s].soldiers, index, esquadroes[s].priority, indices);
+                }
+                else{
+                    heapify(esquadroes[s].soldiers, index, esquadroes[s].priority, indices);
+                }
                 cout << esquadroes[s].soldiers[0].id << ' ' << esquadroes[s].soldiers[0].service_time << ' ' << esquadroes[s].soldiers[0].rank << endl;
             }
             else if(funcao == "MOV"){
@@ -331,8 +323,6 @@ int main(int argc, char *argv[]) {
                 int index = indices[id].index;
                 heap_extracti(esquadroes[s].soldiers, esquadroes[s].priority, indices, index);
                 bubble_up(esquadroes[s].soldiers, index, esquadroes[s].priority, indices);
-                indices[id].squad = -1;
-                indices[id].index = -1;
                 if(esquadroes[s].soldiers.size() != 0){
                     cout << esquadroes[s].soldiers[0].id << ' ' << esquadroes[s].soldiers[0].service_time << ' ' << esquadroes[s].soldiers[0].rank << endl;
                 }
