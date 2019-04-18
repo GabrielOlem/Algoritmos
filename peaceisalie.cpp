@@ -43,6 +43,7 @@ class Dvetor{
             for(int i=0; i<logic; i++){
                 aux[i] = v[i];
             }
+            _size = _size * tam + 1;
             return aux;
         }
         void push_back(T aux){
@@ -69,10 +70,10 @@ class Dvetor{
         }
         void alocate(soldier &soldado, int index, int squad){
             if(soldado.id > _size){
-                resize(soldado.id+1);
+                resize(2*soldado.id + 1);
             }
             v[soldado.id].index = index;
-            v[soldado.id].squad = squad;    
+            v[soldado.id].squad = squad;
         }
 };
 class info{
@@ -152,21 +153,24 @@ bool compare(soldier &a, soldier &b, int criterio){
     }
     return a.id < b.id;
 }
-void bubble_up(Dvetor<soldier> &h, int i, int criterio){
+void bubble_up(Dvetor<soldier> &h, int i, int criterio, Dvetor<info> &ind){
     int p = floor((i - 1)/2);
     while(i > 0 && compare(h[i], h[p], criterio)){
         soldier aux = h[i];
         h[i] = h[p];
         h[p] = aux;
+        info outro = ind[h[i].id];
+        ind[h[i].id] = ind[h[p].id];
+        ind[h[p].id] = outro;
         i = p;
         p = floor((i - 1)/2);
     }
 }
-void heap_insert(Dvetor<soldier> &h, soldier valor, int criterio){
+void heap_insert(Dvetor<soldier> &h, soldier valor, int criterio, Dvetor<info> &ind){
     h.push_back(valor);
-    bubble_up(h, h.size() - 1, criterio);
+    bubble_up(h, h.size() - 1, criterio, ind);
 }
-void heapify(Dvetor<soldier> &h, int index, int criterio){
+void heapify(Dvetor<soldier> &h, int index, int criterio, Dvetor<info> &ind){
     int r = 2*index + 2;
     int l = 2*index + 1;
     int m = index;
@@ -177,28 +181,44 @@ void heapify(Dvetor<soldier> &h, int index, int criterio){
         m = r;
     }
     if(m != index){
+        info outro = ind[h[m].id];
+        ind[h[m].id] = ind[h[index].id];
+        ind[h[index].id] = outro;
         soldier aux = h[m];
         h[m] = h[index];
         h[index] = aux;
-        heapify(h, m, criterio);
+        heapify(h, m, criterio, ind);
     }
 }
-void heap_extract(Dvetor<soldier> &h, int criterio){
+void heap_extract(Dvetor<soldier> &h, int criterio, Dvetor<info> &ind){
     h.pop_back();
+    info outro = ind[h[0].id];
+    ind[h[0].id] = ind[h[h.size()].id];
+    ind[h[h.size()].id] = outro;
     soldier aux = h[0];
     h[0] = h[h.size()];
     h[h.size()] = aux;
-    heapify(h, 0, criterio);
+    heapify(h, 0, criterio, ind);
 }
-void build_heap(Dvetor<soldier> &h, int size, int criterio){
+void build_heap(Dvetor<soldier> &h, int size, int criterio, Dvetor<info> &ind){
     for(int i = floor(size/2) - 1; i>=0; i--){
-        heapify(h, i, criterio);
+        heapify(h, i, criterio, ind);
+    }
+}
+void updateHeap(Dvetor<soldier> &soldados, Dvetor<info> &ind, int index, int criterio){
+    int p = floor((index - 1)/2);
+    if(compare(soldados[index], soldados[p], criterio)){
+        bubble_up(soldados, index, criterio, ind);
+    }
+    else{
+        heapify(soldados, index, criterio, ind);
     }
 }
 int main(int argc, char *argv[]) {
     //ios::sync_with_stdio(false);
     cin.tie(nullptr);
     Dvetor<info> indices;
+    indices.resize(1);
     int squads;
     soldier soldado;
     cin >> squads;
@@ -212,13 +232,11 @@ int main(int argc, char *argv[]) {
             cin >> soldado.service_time;
             cin >> soldado.rank;
             esquadroes[i].soldiers.push_back(soldado);
+            indices.alocate(esquadroes[i].soldiers[j], j, i);
         }
     }
     for(int i=0; i<squads; i++){
-        build_heap(esquadroes[i].soldiers, esquadroes[i].soldiers.size(), esquadroes[i].priority);
-        for(int j=0; j<esquadroes[i].soldiers.size(); j++){
-            indices.alocate(esquadroes[i].soldiers[j], j, i);
-        }
+        build_heap(esquadroes[i].soldiers, esquadroes[i].soldiers.size(), esquadroes[i].priority, indices);
     }
     string funcao;
     while(funcao != "END"){
@@ -230,7 +248,8 @@ int main(int argc, char *argv[]) {
                 cin >> soldado.id;
                 cin >> soldado.service_time;
                 cin >> soldado.rank;
-                heap_insert(esquadroes[esq].soldiers, soldado, esquadroes[esq].priority);
+                indices.alocate(soldado, esquadroes[esq].soldiers.size(), esq);
+                heap_insert(esquadroes[esq].soldiers, soldado, esquadroes[esq].priority, indices);
                 cout << esquadroes[esq].soldiers[0].id << ' ' << esquadroes[esq].soldiers[0].service_time << ' ' << esquadroes[esq].soldiers[0].rank << endl;
             }
             else if(funcao == "UPD"){
@@ -242,7 +261,62 @@ int main(int argc, char *argv[]) {
                 int s = indices[id].squad;
                 esquadroes[s].soldiers[index].service_time = ts;
                 esquadroes[s].soldiers[index].rank = r;
-                updateHeap(esquadroes[s].soldiers, indices, index);
+                updateHeap(esquadroes[s].soldiers, indices, index, esquadroes[s].priority);
+                cout << esquadroes[s].soldiers[0].id << ' ' << esquadroes[s].soldiers[0].service_time << ' ' << esquadroes[s].soldiers[0].rank << endl;
+            }
+            else if(funcao == "MOV"){
+                int squadi, squadj;
+                cin >> squadi >> squadj;
+                heap_insert(esquadroes[squadj].soldiers, esquadroes[squadi].soldiers[0], esquadroes[squadj].priority, indices);
+                heap_extract(esquadroes[squadi].soldiers, esquadroes[squadi].priority, indices);
+                if(esquadroes[squadi].soldiers.size() != 0){
+                    cout << esquadroes[squadi].soldiers[0].id << ' ' << esquadroes[squadi].soldiers[0].service_time << ' ' << esquadroes[squadi].soldiers[0].rank;
+                }
+                else{
+                    cout << "-1 -1 -1";
+                }
+                if(esquadroes[squadj].soldiers.size() != 0){
+                    cout << ' ' << esquadroes[squadj].soldiers[0].id << ' ' << esquadroes[squadj].soldiers[0].service_time << ' ' << esquadroes[squadj].soldiers[0].rank << endl;
+                }
+                else{
+                    cout << "-1 -1 -1" << endl;
+                }
+            }
+            else if(funcao == "CHG"){
+                int squadi, squadj;
+                int qtd;
+                int novo_criterio;
+                cin >> squadi >> squadj >> qtd >> novo_criterio;
+                for(int i=0; i<qtd; i++){
+                    heap_insert(esquadroes[squadj].soldiers, esquadroes[squadi].soldiers[0], esquadroes[squadj].priority, indices);
+                    heap_extract(esquadroes[squadi].soldiers, esquadroes[squadi].priority, indices);
+                }
+                esquadroes[squadi].priority = novo_criterio;
+                build_heap(esquadroes[squadi].soldiers, esquadroes[squadi].soldiers.size(), novo_criterio, indices);
+                if(esquadroes[squadi].soldiers.size() != 0){
+                    cout << esquadroes[squadi].soldiers[0].id << ' ' << esquadroes[squadi].soldiers[0].service_time << ' ' << esquadroes[squadi].soldiers[0].rank;
+                }
+                else{
+                    cout << "-1 -1 -1";
+                }
+                if(esquadroes[squadj].soldiers.size() != 0){
+                    cout << ' ' << esquadroes[squadj].soldiers[0].id << ' ' << esquadroes[squadj].soldiers[0].service_time << ' ' << esquadroes[squadj].soldiers[0].rank << endl;
+                }
+                else{
+                    cout << "-1 -1 -1" << endl;
+                }
+            }
+            else if(funcao == "KIA"){
+                int id;
+                cin >> id;
+                int s = indices[id].squad;
+                heap_extract(esquadroes[s].soldiers, esquadroes[s].priority, indices);
+                if(esquadroes[s].soldiers.size() != 0){
+                    cout << esquadroes[s].soldiers[0].id << ' ' << esquadroes[s].soldiers[0].service_time << ' ' << esquadroes[s].soldiers[0].rank << endl;
+                }
+                else{
+                    cout << "-1 -1 -1" << endl;
+                }
             }
         }
     }
