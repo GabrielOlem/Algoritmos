@@ -68,13 +68,6 @@ class Dvetor{
         T& operator[](int index){
             return v[index];
         }
-        void alocate(soldier &soldado, int index, int squad){
-            if(soldado.id >= _size){
-                resize(_size*soldado.id + 1);
-            }
-            v[soldado.id].index = index;
-            v[soldado.id].squad = squad;
-        }
 };
 class info{
     public:
@@ -156,7 +149,7 @@ bool compare(soldier &a, soldier &b, int criterio){
         }
     }
 }
-void bubble_up(Dvetor<soldier> &h, int i, int criterio, Dvetor<info> &ind){
+void bubble_up(Dvetor<soldier> &h, int i, int criterio, info ind[]){
     int p = floor((i - 1)/2);
     while(i > 0 && compare(h[i], h[p], criterio)){
         soldier aux = h[i];
@@ -169,11 +162,11 @@ void bubble_up(Dvetor<soldier> &h, int i, int criterio, Dvetor<info> &ind){
         p = floor((i - 1)/2);
     }
 }
-void heap_insert(Dvetor<soldier> &h, soldier &valor, int criterio, Dvetor<info> &ind){
+void heap_insert(Dvetor<soldier> &h, soldier &valor, int criterio, info ind[]){
     h.push_back(valor);
     bubble_up(h, h.size() - 1, criterio, ind);
 }
-void heapify(Dvetor<soldier> &h, int index, int criterio, Dvetor<info> &ind){
+void heapify(Dvetor<soldier> &h, int index, int criterio, info ind[]){
     int r = 2*index + 2;
     int l = 2*index + 1;
     int m = index;
@@ -193,7 +186,7 @@ void heapify(Dvetor<soldier> &h, int index, int criterio, Dvetor<info> &ind){
         heapify(h, m, criterio, ind);
     }
 }
-void heap_extracti(Dvetor<soldier> &h, int criterio, Dvetor<info> &ind, int index){
+void heap_extracti(Dvetor<soldier> &h, int criterio, info ind[], int index){
     h.pop_back();
     info outro = ind[h[index].id];
     ind[h[index].id] = ind[h[h.size()].id];
@@ -203,7 +196,7 @@ void heap_extracti(Dvetor<soldier> &h, int criterio, Dvetor<info> &ind, int inde
     h[h.size()] = aux;
     heapify(h, index, criterio, ind);
 }
-void build_heap(Dvetor<soldier> &h, int size, int criterio, Dvetor<info> &ind){
+void build_heap(Dvetor<soldier> &h, int size, int criterio, info ind[]){
     for(int i = floor(size/2) - 1; i>=0; i--){
         heapify(h, i, criterio, ind);
     }
@@ -211,7 +204,7 @@ void build_heap(Dvetor<soldier> &h, int size, int criterio, Dvetor<info> &ind){
 int main(int argc, char *argv[]) {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
-    Dvetor<info> indices;
+    info indices[1000000];
     int squads;
     soldier soldado;
     cin >> squads;
@@ -225,7 +218,8 @@ int main(int argc, char *argv[]) {
             cin >> soldado.service_time;
             cin >> soldado.rank;
             esquadroes[i].soldiers.push_back(soldado);
-            indices.alocate(esquadroes[i].soldiers[j], j, i);
+            indices[esquadroes[i].soldiers[j].id].index = j;
+            indices[esquadroes[i].soldiers[j].id].squad = i;
         }
         build_heap(esquadroes[i].soldiers, esquadroes[i].soldiers.size(), esquadroes[i].priority, indices);
     }
@@ -236,7 +230,8 @@ int main(int argc, char *argv[]) {
             if(funcao == "ADD"){
                 int esq;
                 cin >> esq >> soldado.id >> soldado.service_time >> soldado.rank;
-                indices.alocate(soldado, esquadroes[esq].soldiers.size(), esq);
+                indices[soldado.id].index = esquadroes[esq].soldiers.size();
+                indices[soldado.id].squad = esq;
                 heap_insert(esquadroes[esq].soldiers, soldado, esquadroes[esq].priority, indices);
                 cout << esquadroes[esq].soldiers[0].id << ' ' << esquadroes[esq].soldiers[0].service_time << ' ' << esquadroes[esq].soldiers[0].rank << endl;
             }
