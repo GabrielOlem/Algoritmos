@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 typedef struct soldier{
     int rank;
@@ -12,7 +13,7 @@ typedef struct info{
 }info;
 typedef struct squad{
     int priority;
-    soldier soldiers[1000000];
+    soldier *soldiers;
 }squad;
 int compare(soldier a, soldier b, int criterio){
     if(criterio == 0){
@@ -84,7 +85,7 @@ int compare(soldier a, soldier b, int criterio){
         }
     }
 }
-void bubble_up(soldier h[], int i, int criterio, info ind[]){
+void bubble_up(soldier *h, int i, int criterio, info *ind){
     int p = ((i - 1)/2);
     while(i > 0 && compare(h[i], h[p], criterio)){
         soldier aux = h[i];
@@ -97,7 +98,7 @@ void bubble_up(soldier h[], int i, int criterio, info ind[]){
         p = ((i - 1)/2);
     }
 }
-void heapify(soldier h[], int index, int criterio, info ind[], int final){
+void heapify(soldier *h, int index, int criterio, info *ind, int final){
     int r = 2*index + 2;
     int l = 2*index + 1;
     int m = index;
@@ -117,7 +118,7 @@ void heapify(soldier h[], int index, int criterio, info ind[], int final){
         heapify(h, m, criterio, ind, final);
     }
 }
-void heap_extracti(soldier h[], int criterio, info ind[], int index, int final){
+void heap_extracti(soldier *h, int criterio, info *ind, int index, int final){
     info outro = ind[h[index].id];
     ind[h[index].id] = ind[h[final].id];
     ind[h[final].id] = outro;
@@ -126,7 +127,7 @@ void heap_extracti(soldier h[], int criterio, info ind[], int index, int final){
     h[final] = aux;
     heapify(h, index, criterio, ind, final);
 }
-void build_heap(soldier h[], int size, int criterio, info ind[]){
+void build_heap(soldier *h, int size, int criterio, info *ind){
     int i;
     for(i = (size/2) - 1; i>=0; i--){
         heapify(h, i, criterio, ind, size);
@@ -140,15 +141,14 @@ int main(int argc, char *argv[]) {
     int qtd_squads;
     squad esquadroes[squads];
     int b;
-    int logic[squads], i, j;
+    int logic[squads];
+    int i, j;
     for(i=0; i<squads; i++){
+        esquadroes[i].soldiers = (soldier*)malloc(100000*sizeof(soldier));
         logic[i] = 0;
-        scanf("%i %i", &qtd_squads, &b);
-        esquadroes[i].priority = b;
+        scanf("%i %i", &qtd_squads, &esquadroes[i].priority);
         for(j=0; j<qtd_squads; j++){
             scanf("%i %i %i", &soldado.id, &soldado.service_time, &soldado.rank);
-            printf("%i %i %i\n", soldado.id, soldado.service_time, soldado.rank);
-            return 0;
             esquadroes[i].soldiers[logic[i]] = soldado;
             logic[i]++;
             indices[esquadroes[i].soldiers[j].id].index = j;
@@ -156,8 +156,6 @@ int main(int argc, char *argv[]) {
         }
         build_heap(esquadroes[i].soldiers, logic[i], esquadroes[i].priority, indices);
     }
-    printf("a");
-    return 0;
     char funcao[10];
     while(strcmp(funcao, "END") != 0){
         scanf(" %s", funcao);
@@ -254,7 +252,7 @@ int main(int argc, char *argv[]) {
                     printf(" -1 -1 -1\n");
                 }
             }
-            else if(funcao == "KIA"){
+            else if(strcmp(funcao, "KIA") == 0){
                 int id;
                 scanf("%i", &id);
                 int s = indices[id].squad;
