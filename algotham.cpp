@@ -11,19 +11,8 @@ struct agent{
     }
 };
 int *pais;
-int c;
 vector<vector<int> > permutacoes;
 bool ***matriz_agentes;
-bool ehCompativel(int id, vector<int> &teste){
-    for(int i=0; i<teste.size(); i++){
-        for(int j = i + 1; j<teste.size(); j++){
-            if(matriz_agentes[id][teste[i]][teste[j]] == false){
-                return 0;
-            }
-        }
-    }
-    return 1;
-}
 bool ehCompativel2(int id, vector<int> &teste){
     for(int i=teste.size()-1; i>=0; i--){
         for(int j = i-1; j>=0; j--){
@@ -47,22 +36,6 @@ int find(int a){
     }
     return pais[a] = find(pais[a]);
 }
-vector<int> backtrack;
-void backtracking(int limite, int tam, int tenho){
-    if(tam == tenho){
-        c++;
-        permutacoes.push_back(backtrack);
-        return;
-    }
-    else{
-        for(int i=limite; i>=0; i--){
-            backtrack.push_back(i);
-            backtracking(i - 1, tam, tenho + 1);
-            backtrack.pop_back();
-        }
-    }
-}
-
 int main(){
     int a, n, k, q;
     cin >> a >> n >> k >> q;
