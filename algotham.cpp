@@ -11,6 +11,7 @@ struct agent{
     }
 };
 int *pais;
+int c;
 vector<vector<int> > permutacoes;
 bool ***matriz_agentes;
 bool ehCompativel(int id, vector<int> &teste){
@@ -23,9 +24,19 @@ bool ehCompativel(int id, vector<int> &teste){
     }
     return 1;
 }
+bool ehCompativel2(int id, vector<int> &teste){
+    for(int i=teste.size()-1; i>=0; i--){
+        for(int j = i-1; j>=0; j--){
+            if(matriz_agentes[id][teste[i]][teste[j]] == false){
+                return 0;
+            }
+        }
+    }
+    return 1;
+}
 vector<int> pegaCertificado(int id){
     for(int i=0; i<permutacoes.size(); i++){
-        if(ehCompativel(id, permutacoes[i])){
+        if(ehCompativel2(id, permutacoes[i])){
             return permutacoes[i];
         }
     }
@@ -39,6 +50,7 @@ int find(int a){
 vector<int> backtrack;
 void backtracking(int limite, int tam, int tenho){
     if(tam == tenho){
+        c++;
         permutacoes.push_back(backtrack);
         return;
     }
@@ -64,7 +76,30 @@ int main(){
         }
         pais[i] = i;
     }
-    backtracking(n - 1, k, 0);
+    vector<int> base;
+    for(int i=0; i<k; i++){
+        base.push_back(i);
+    }
+    while(1){
+        permutacoes.push_back(base);
+        int aux = base.size() - 1;
+        base[aux]++;
+        int p = n;
+        while(base[aux] == p){
+            aux--;
+            if(aux == -1){
+                break;
+            }
+            base[aux]++;
+            p--;
+        }
+        if(aux == -1){
+            break;
+        }
+        for(int i=aux+1; i<base.size(); i++){
+            base[i] = base[i-1] + 1;
+        }
+    }
     for(int i=0; i<q; i++){
         int idA, idB;
         cin >> idA >> idB;
@@ -102,13 +137,13 @@ int main(){
         if(!agentes[idA].calculado && !agentes[idB].calculado){
             agentes[idA].certificado = pegaCertificado(idA);
             agentes[idA].calculado = true;
-            if(ehCompativel(idB, agentes[idA].certificado)){
+            if(ehCompativel2(idB, agentes[idA].certificado)){
                 agentes[idB].calculado = true;
                 pais[idB] = idA;
                 cout << "SUCC ";
-                for(int i=agentes[idA].certificado.size() - 1; i >= 0; i--){
+                for(int i=0; i < agentes[idA].certificado.size(); i++){
                     cout << agentes[idA].certificado[i];
-                    if(i != 0){
+                    if(i+1 != agentes[idA].certificado.size()){
                         cout << ' ';
                     }
                 }
@@ -120,13 +155,13 @@ int main(){
         }
         else if(!agentes[idA].calculado && agentes[idB].calculado){
             int pai = find(idB);
-            if(ehCompativel(idA, agentes[pai].certificado)){
+            if(ehCompativel2(idA, agentes[pai].certificado)){
                 agentes[idA].calculado = true;
                 pais[idA] = pai;
                 cout << "SUCC ";
-                for(int i=agentes[pai].certificado.size() - 1; i >= 0; i--){
+                for(int i=0; i < agentes[pai].certificado.size(); i++){
                     cout << agentes[pai].certificado[i];
-                    if(i != 0){
+                    if(i+1 != agentes[pai].certificado.size()){
                         cout << ' ';
                     }
                 }
@@ -138,13 +173,13 @@ int main(){
         }
         else if(agentes[idA].calculado && !agentes[idB].calculado){
             int pai = find(idA);
-            if(ehCompativel(idB, agentes[pai].certificado)){
+            if(ehCompativel2(idB, agentes[pai].certificado)){
                 agentes[idB].calculado = true;
                 pais[idB] = pai;
                 cout << "SUCC ";
-                for(int i=agentes[pai].certificado.size() - 1; i >= 0; i--){
+                for(int i=0; i < agentes[pai].certificado.size(); i++){
                     cout << agentes[pai].certificado[i];
-                    if(i != 0){
+                    if(i+1 != agentes[pai].certificado.size()){
                         cout << ' ';
                     }
                 }
@@ -159,9 +194,9 @@ int main(){
             int paiB = find(idB);
             if(paiA == paiB){
                 cout << "SUCC ";
-                for(int i=agentes[paiB].certificado.size() - 1; i >= 0; i--){
+                for(int i=0; i < agentes[paiB].certificado.size(); i++){
                     cout << agentes[paiB].certificado[i];
-                    if(i != 0){
+                    if(i+1 != agentes[paiB].certificado.size()){
                         cout << ' ';
                     }
                 }
@@ -178,9 +213,9 @@ int main(){
                 if(igual){
                     pais[paiB] = paiA;
                     cout << "SUCC ";
-                    for(int i=agentes[paiB].certificado.size() - 1; i >= 0; i--){
+                    for(int i=0; i < agentes[paiB].certificado.size(); i++){
                         cout << agentes[paiB].certificado[i];
-                        if(i != 0){
+                        if(i+1 != agentes[paiB].certificado.size()){
                             cout << ' ';
                         }
                     }
