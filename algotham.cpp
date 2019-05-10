@@ -37,6 +37,8 @@ int find(int a){
     return pais[a] = find(pais[a]);
 }
 int main(){
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
     int a, n, k, q;
     cin >> a >> n >> k >> q;
     agent agentes[a];
