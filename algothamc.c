@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdlib.h>
 typedef struct agent{
     bool lido;
     bool calculado;
@@ -62,7 +63,6 @@ int main(){
         for(l=0; l<k; l++){
             permutacoes[index][l] = base[l];
         }
-        printf("\n");
         index++;
         int aux = k - 1;
         base[aux]++;
@@ -117,8 +117,6 @@ int main(){
                 }
             }
         }
-        printf("a");
-        return 0;
         if(!agentes[idA].calculado && !agentes[idB].calculado){
             agentes[idA].certificado = pegaCertificado(idA, index, k);
             agentes[idA].calculado = true;
