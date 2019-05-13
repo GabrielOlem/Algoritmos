@@ -13,7 +13,7 @@ bool ehCompativel2(int id, int *teste, int k){
     int i,j;
     for(i=k-1; i>=0; i--){
         for(j = i-1; j>=0; j--){
-            if(matriz_agentes[id][teste[i]][teste[j]] == false){
+            if(matriz_agentes[id][teste[i]][teste[j]] == 48){
                 return 0;
             }
         }
@@ -38,14 +38,14 @@ int main(){
     int a, n, k, q;
     scanf("%i %i %i %i", &a, &n, &k, &q);
     agent agentes[a];
-    matriz_agentes = (bool***)malloc(sizeof(bool**)*a);
+    matriz_agentes = (char***)malloc(sizeof(char**)*a);
     pais = (int*)malloc(sizeof(int)*a);
     int i, j;
     int base[k];
     for(i=0; i<a; i++){
-        matriz_agentes[i] = (bool**)malloc(sizeof(bool*)*n);
+        matriz_agentes[i] = (char**)malloc(sizeof(char*)*n);
         for(j=0; j<n; j++){
-            matriz_agentes[i][j] = (bool*)malloc(sizeof(bool)*n);
+            matriz_agentes[i][j] = (char*)malloc(sizeof(char)*n);
             if(j < k){
                 base[j] = j;
             }
@@ -91,14 +91,7 @@ int main(){
             char linha[200];
             for(i=1; i<n; i++){
                 scanf(" %s", linha);
-                for(j=0; j<i; j++){
-                    if(linha[j] == '1'){
-                        matriz_agentes[idA][i][j] = true;
-                    }
-                    else{
-                        matriz_agentes[idA][i][j] = false;
-                    }
-                }
+                matriz_agentes[idA][i] = linha;
             }
         }
         if(!agentes[idB].lido){
@@ -106,14 +99,7 @@ int main(){
             char linha[200];
             for(i=1; i<n; i++){
                 scanf(" %s", linha);
-                for(j=0; j<i; j++){
-                    if(linha[j] == '1'){
-                        matriz_agentes[idB][i][j] = true;
-                    }
-                    else{
-                        matriz_agentes[idB][i][j] = false;
-                    }
-                }
+                matriz_agentes[idB][i] = linha;
             }
         }
         if(!agentes[idA].calculado && !agentes[idB].calculado){
