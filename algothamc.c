@@ -6,7 +6,6 @@ typedef struct agent{
     bool calculado;
     int certificado;
 }agent;
-int *pais;
 int **permutacoes;
 char ***matriz_agentes;
 bool ehCompativel2(int id, int *teste, int k){
@@ -28,18 +27,11 @@ int pegaCertificado(int id, int size, int k){
         }
     }
 }
-int find(int a){
-    if(pais[a] == a){
-        return a;
-    }
-    return pais[a] = find(pais[a]);
-}
 int main(){
     int a, n, k, q;
     scanf("%i %i %i %i", &a, &n, &k, &q);
     agent agentes[a];
     matriz_agentes = (char***)malloc(sizeof(char**)*a);
-    pais = (int*)malloc(sizeof(int)*a);
     int i, j;
     int base[k];
     for(i=0; i<a; i++){
@@ -103,7 +95,7 @@ int main(){
             agentes[idA].calculado = true;
             if(ehCompativel2(idB, permutacoes[agentes[idA].certificado], k)){
                 agentes[idB].calculado = true;
-                pais[idB] = idA;
+                agentes[idB].certificado = agentes[idA].certificado;
                 printf("SUCC ");
                 int i2;
                 for(i2=0; i2 < k; i2++){
@@ -119,13 +111,11 @@ int main(){
             }
         }
         else if(agentes[idA].calculado && agentes[idB].calculado){
-            int paiA = find(idA);
-            int paiB = find(idB);
-            if(paiA == paiB){
+            if(agentes[idA].certificado == agentes[idB].certificado){
                 printf("SUCC ");
                 int i2;
                 for(i2=0; i2 < k; i2++){
-                    printf("%i", permutacoes[agentes[paiB].certificado][i2]);
+                    printf("%i", permutacoes[agentes[idA].certificado][i2]);
                     if(i2+1 != k){
                         printf(" ");
                     }
@@ -133,32 +123,17 @@ int main(){
                 printf("\n");
             }
             else{
-                if(agentes[paiA].certificado == agentes[paiB].certificado){
-                    pais[paiB] = paiA;
-                    printf("SUCC ");
-                    int i2;
-                    for(i2=0; i2 < k; i2++){
-                        printf("%i", permutacoes[agentes[paiB].certificado][i2]);
-                        if(i2+1 != k){
-                            printf(" ");
-                        }
-                    }
-                    printf("\n");
-                }
-                else{
-                    printf("FAIL\n");
-                }
+                printf("FAIL\n");
             }
         }
         else if(agentes[idB].calculado){
-            int pai = find(idB);
-            if(ehCompativel2(idA, permutacoes[agentes[pai].certificado], k)){
+            if(ehCompativel2(idA, permutacoes[agentes[idB].certificado], k)){
                 agentes[idA].calculado = true;
-                pais[idA] = pai;
+                agentes[idA].certificado = agentes[idB].certificado;
                 printf("SUCC ");
                 int i2;
                 for(i2=0; i2 < k; i2++){
-                    printf("%i", permutacoes[agentes[pai].certificado][i2]);
+                    printf("%i", permutacoes[agentes[idB].certificado][i2]);
                     if(i2+1 != k){
                         printf(" ");
                     }
@@ -170,14 +145,13 @@ int main(){
             }
         }
         else{
-            int pai = find(idA);
-            if(ehCompativel2(idB, permutacoes[agentes[pai].certificado], k)){
+            if(ehCompativel2(idB, permutacoes[agentes[idA].certificado], k)){
                 agentes[idB].calculado = true;
-                pais[idB] = pai;
+                agentes[idB].certificado = agentes[idA].certificado;
                 printf("SUCC ");
                 int i2;
                 for(i2=0; i2 < k; i2++){
-                    printf("%i", permutacoes[agentes[pai].certificado][i2]);
+                    printf("%i", permutacoes[agentes[idA].certificado][i2]);
                     if(i2+1 != k){
                         printf(" ");
                     }
