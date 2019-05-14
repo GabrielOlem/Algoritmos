@@ -88,18 +88,14 @@ int main(){
         scanf("%i %i", &idA, &idB);
         if(!agentes[idA].lido){
             agentes[idA].lido = true;
-            char linha[200];
             for(i=1; i<n; i++){
-                scanf(" %s", linha);
-                matriz_agentes[idA][i] = linha;
+                scanf(" %s", matriz_agentes[idA][i]);
             }
         }
         if(!agentes[idB].lido){
             agentes[idB].lido = true;
-            char linha[200];
             for(i=1; i<n; i++){
-                scanf(" %s", linha);
-                matriz_agentes[idB][i] = linha;
+                scanf(" %s", matriz_agentes[idB][i]);
             }
         }
         if(!agentes[idA].calculado && !agentes[idB].calculado){
