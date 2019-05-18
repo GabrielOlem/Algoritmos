@@ -8,11 +8,19 @@ typedef struct agent{
 }agent;
 int **permutacoes;
 char ***matriz_agentes;
+<<<<<<< HEAD
 bool ehCompativel2(int id, int teste, int k){
     int i,j;
     for(i=k-1; i>=0; i--){
         for(j = i-1; j>=0; j--){
             if(matriz_agentes[id][permutacoes[teste][i]][permutacoes[teste][j]] == 48){
+=======
+bool ehCompativel2(int id, int *teste, int k){
+    int i,j;
+    for(i=k-1; i>=0; i--){
+        for(j = i-1; j>=0; j--){
+            if(matriz_agentes[id][teste[i]][teste[j]] == 48){
+>>>>>>> 3b089663a11bc1f6411d8bc31a21932f5df721cb
                 return 0;
             }
         }
@@ -22,7 +30,11 @@ bool ehCompativel2(int id, int teste, int k){
 int pegaCertificado(int id, int size, int k){
     int i;
     for(i=0; i<size; i++){
+<<<<<<< HEAD
         if(ehCompativel2(id, i, k)){
+=======
+        if(ehCompativel2(id, permutacoes[i], k)){
+>>>>>>> 3b089663a11bc1f6411d8bc31a21932f5df721cb
             return i;
         }
     }
@@ -114,7 +126,7 @@ int main(){
                 }
             }
             agentes[idA].calculado = true;
-            if(ehCompativel2(idB, agentes[idA].certificado, k)){
+            if(ehCompativel2(idB, permutacoes[agentes[idA].certificado], k)){
                 agentes[idB].calculado = true;
                 agentes[idB].certificado = agentes[idA].certificado;
                 printf("SUCC ");
@@ -148,7 +160,11 @@ int main(){
             }
         }
         else if(agentes[idB].calculado){
+<<<<<<< HEAD
             if(ehCompativel2(idA, agentes[idB].certificado, k)){
+=======
+            if(ehCompativel2(idA, permutacoes[agentes[idB].certificado], k)){
+>>>>>>> 3b089663a11bc1f6411d8bc31a21932f5df721cb
                 agentes[idA].calculado = true;
                 agentes[idA].certificado = agentes[idB].certificado;
                 printf("SUCC ");
@@ -166,7 +182,11 @@ int main(){
             }
         }
         else{
+<<<<<<< HEAD
             if(ehCompativel2(idB, agentes[idA].certificado, k)){
+=======
+            if(ehCompativel2(idB, permutacoes[agentes[idA].certificado], k)){
+>>>>>>> 3b089663a11bc1f6411d8bc31a21932f5df721cb
                 agentes[idB].calculado = true;
                 agentes[idB].certificado = agentes[idA].certificado;
                 printf("SUCC ");
