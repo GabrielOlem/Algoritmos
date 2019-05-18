@@ -160,11 +160,7 @@ int main(){
             }
         }
         else if(agentes[idB].calculado){
-<<<<<<< HEAD
-            if(ehCompativel2(idA, agentes[idB].certificado, k)){
-=======
             if(ehCompativel2(idA, permutacoes[agentes[idB].certificado], k)){
->>>>>>> 3b089663a11bc1f6411d8bc31a21932f5df721cb
                 agentes[idA].calculado = true;
                 agentes[idA].certificado = agentes[idB].certificado;
                 printf("SUCC ");
@@ -182,11 +178,7 @@ int main(){
             }
         }
         else{
-<<<<<<< HEAD
-            if(ehCompativel2(idB, agentes[idA].certificado, k)){
-=======
             if(ehCompativel2(idB, permutacoes[agentes[idA].certificado], k)){
->>>>>>> 3b089663a11bc1f6411d8bc31a21932f5df721cb
                 agentes[idB].calculado = true;
                 agentes[idB].certificado = agentes[idA].certificado;
                 printf("SUCC ");
