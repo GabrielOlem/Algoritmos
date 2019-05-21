@@ -8,11 +8,11 @@ typedef struct agent{
 }agent;
 int **permutacoes;
 char ***matriz_agentes;
-bool ehCompativel2(int id, int *teste, int k){
+bool ehCompativel2(int id, int teste, int k){
     int i,j;
     for(i=k-1; i>=0; i--){
         for(j = i-1; j>=0; j--){
-            if(matriz_agentes[id][teste[i]][teste[j]] == 48){
+            if(matriz_agentes[id][permutacoes[teste][i]][permutacoes[teste][j]] == 48){
                 return 0;
             }
         }
@@ -44,7 +44,6 @@ int main(){
         }
         agentes[i].calculado = false;
         agentes[i].lido = false;
-        pais[i] = i;
     }
     int index = 0;
     permutacoes = (int**)malloc(sizeof(int*)*(int)1e6);
@@ -74,6 +73,8 @@ int main(){
             base[i] = base[i-1] + 1;
         }
     }
+    int noutro = 0;
+    int* outro = (int*)malloc(sizeof(int*)*index);
     int m;
     for(m=0; m<q; m++){
         int idA, idB;
@@ -91,7 +92,27 @@ int main(){
             }
         }
         if(!agentes[idA].calculado && !agentes[idB].calculado){
-            agentes[idA].certificado = pegaCertificado(idA, index, k);
+            if(noutro == 0){
+                agentes[idA].certificado = pegaCertificado(idA, index, k);
+                outro[noutro] = agentes[idA].certificado;
+                noutro++;
+            }
+            else{
+                bool nachei = true;
+                int loop;
+                for(loop=0; loop<noutro; loop++){
+                    if(ehCompativel2(idA, outro[loop], k)){
+                        agentes[idA].certificado = outro[loop];
+                        nachei = false;
+                        break;
+                    }
+                }
+                if(nachei){
+                    agentes[idA].certificado = pegaCertificado(idA, index, k);
+                    outro[noutro] = agentes[idA].certificado;
+                    noutro++;
+                }
+            }
             agentes[idA].calculado = true;
             if(ehCompativel2(idB, permutacoes[agentes[idA].certificado], k)){
                 agentes[idB].calculado = true;
