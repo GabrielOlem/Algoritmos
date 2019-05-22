@@ -1,5 +1,5 @@
 #include <bits/stdc++.h>
-#define MAX (int)1e7
+#define MAX 100000
 using namespace std;
 struct aresta{
     int u;
@@ -76,11 +76,76 @@ int kruskal(vector<aresta> &arestas){//Funciona com pesos negativos
     }
     return co;
 }
+void BellmanFord(vector<vector<aresta> > &grafo, int s){//Funciona com pesos negativos
+    int vertices = grafo.size();
+    int dist[vertices];
+    for(int i=0; i<vertices; i++){
+        dist[i] = 10000;
+    }
+    dist[s] = 0;
+    for(int k=1; k<vertices; k++){
+        for(int u=0; u<vertices; u++){
+            for(int j=0; j<grafo[u].size(); j++){
+                int de = grafo[u][j].u;
+                int para = grafo[u][j].v;
+                int peso = grafo[u][j].peso;
+                if(dist[de] + peso < dist[para]){
+                    dist[para] = dist[de] + peso;
+                }
+            }
+        }
+    }
+    for(int u=0; u<vertices; u++){
+        for(int j=0; j<grafo[u].size(); j++){
+            if(dist[u] + grafo[u][j].peso < dist[grafo[u][j].v]){
+                cout << "Tem ciclo negativo" << endl;
+                break;
+            }
+        }
+    }
+    for(int i=0; i<vertices; i++){
+        cout << dist[i] << ' ';
+    }
+}
+void FloydWarshall(vector<vector<aresta> > &grafo){
+    int vertices = grafo.size();
+    int dist[vertices][vertices];
+    for(int i=0; i<vertices; i++){
+        for(int j=0; j<vertices; j++){
+             dist[i][j] = MAX;
+        }
+    }
+    for(int s=0; s<vertices; s++){
+        dist[s][s] = 0;
+        for(int j=0; j<grafo[s].size(); j++){
+            int para = grafo[s][j].v;
+            int peso = grafo[s][j].peso;
+            if(dist[s][para] > peso){
+                dist[s][para] = peso;
+            }
+        }
+    }
+    for(int k=1; k<=vertices; k++){
+        for(int s=0; s<vertices; s++){
+            for(int t=0; t<vertices; t++){
+                if(dist[s][t] > dist[s][k-1] + dist[k-1][t]){
+                    dist[s][t] = dist[s][k-1] + dist[k-1][t];
+                }
+            }
+        }
+    }
+    for(int i=0; i<vertices; i++){
+        for(int j=0; j<vertices; j++){
+            cout << dist[i][j] << ' ';
+        }
+        cout << endl;
+    }
+}
 int main(){
     vector<vector<aresta> > grafo;
-    vector<aresta> arestas;
     int n;
     cin >> n;
+    int E = 0;
     pais = new int[n];
     grafo.resize(n);
     for(int i=0; i<n; i++){
@@ -91,9 +156,14 @@ int main(){
             aresta a;
             cin >> a.v >> a.peso;
             a.u = i;
-            arestas.push_back(a);
+            grafo[i].push_back(a);
         }
     }
-    cout << kruskal(arestas);
+    for(int i=0; i<grafo.size(); i++){
+        BellmanFord(grafo, i);
+        cout << endl;
+    }
+    cout << endl;
+    FloydWarshall(grafo);
     return 0;
 }
