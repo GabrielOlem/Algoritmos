@@ -18,6 +18,7 @@ struct disti{
 };
 vector<vector<aresta> > grafo;
 int **estoque;
+int **certificados;
 bool verifica(pedido pedidos[], int npedidos, int local){
     for(int i=0; i<npedidos; i++){
         if(pedidos[i].qtd > estoque[local][pedidos[i].livro]){
@@ -100,8 +101,20 @@ void dijkstra(int s, pedido pedidos[], int npedidos){
     sort(dist.begin(), dist.end(), compare);
     for(int i=1; i<vertices; i++){
         if(verifica(pedidos, npedidos, dist[i].i)){
+            int pre = dist[i].i;
+            for(int j=0; j<vertices; j++){
+                if(pre != -1){
+                    cout << pre  << ' ';
+                    pre = precessor[pre];
+                }
+                else{
+                    break;
+                }
+            }
+            for(int j=0; j<npedidos; j++){
+                estoque[dist[i].i][pedidos[j].livro] -= pedidos[j].qtd;
+            }
             cout << dist[i].d << endl;
-            cout << dist[i].i << endl;
             return;
         }
     }
@@ -111,12 +124,18 @@ int main(){
     int v, e, b;
     cin >> v >> e >> b;
     estoque = new int*[v];
+    certificados = new int*[v];
     grafo.resize(v);
+    for(int i=0; i<v; i++){
+        certificados[i] = new int[v];
+    }
     for(int i=0; i<e; i++){
         int x, y;
         cin >> x >> y;
         aresta a;
         cin >> a.distancia >> a.coeficiente;
+        certificados[x][y] = a.coeficiente;
+        certificados[y][x] = a.coeficiente;
         a.u = x;
         a.v = y;
         a.custo = floor((a.distancia*(100 + a.coeficiente))/100);
