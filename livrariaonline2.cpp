@@ -86,7 +86,9 @@ void heap_extract(){
     h[h.size()] = aux;
     heapify(0);
 }
-
+bool compare(disti a, disti b){
+    return a.d < b.d;
+}
 void dijkstra(int s, pedido *pedidos, int npedidos){
     int vertices = grafo.size();
     vector<disti> dist(vertices);
@@ -111,24 +113,6 @@ void dijkstra(int s, pedido *pedidos, int npedidos){
         if(dist[removido.v].d < removido.custo){
             continue;
         }
-        if(removido.v != s){
-            if(verifica(pedidos, npedidos, removido.v)){
-                int pre = removido.v;
-                for(int j=0; j<vertices; j++){
-                    if(pre != -1){
-                        cout << pre << ' ';
-                        pre = precessor[pre];
-                    }
-                    else{
-                        break;
-                    }
-                }
-
-                
-                cout << removido.custo << endl;
-                return;
-            }
-        }
         for(int e=0; e<grafo[removido.v].size(); e++){
             int para = grafo[removido.v][e].v;
             if(grafo[removido.v][e].coeficiente != certificados[removido.v][grafo[removido.v][e].v] && certificados[removido.v][grafo[removido.v][e].v] != -1){
@@ -150,11 +134,10 @@ void dijkstra(int s, pedido *pedidos, int npedidos){
             }
         }
     }
-    while(h.size() != 0){
-        aresta removido = h[0];
-        heap_extract();
-        if(verifica(pedidos, npedidos, removido.v)){
-            int pre = removido.v;
+    sort(dist.begin(), dist.end(), compare);
+    for(int i=0; i<vertices; i++){
+        if(verifica(pedidos, npedidos, dist[i].i)){
+            int pre = dist[i].i;
             for(int j=0; j<vertices; j++){
                 if(pre != -1){
                     cout << pre  << ' ';
@@ -164,7 +147,7 @@ void dijkstra(int s, pedido *pedidos, int npedidos){
                     break;
                 }
             }
-            cout << removido.custo << endl;
+            cout << dist[i].d << endl;
             return;
         }
     }
@@ -172,6 +155,8 @@ void dijkstra(int s, pedido *pedidos, int npedidos){
 }
 
 int main(){
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
     int v, e, b;
     cin >> v >> e >> b;
     estoque = new int*[v];
