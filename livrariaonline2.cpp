@@ -2,13 +2,12 @@
 #define MAX 0x3f3f3f3f
 using namespace std;
 
-typedef long long int lli;
 struct aresta{
     int u;
     int v;
-    lli custo;
-    lli distancia;
-    lli coeficiente;
+    int custo;
+    int distancia;
+    int coeficiente;
 };
 
 struct pedido{
@@ -23,22 +22,27 @@ struct disti{
 
 vector<vector<aresta> > grafo;
 int **estoque;
-
-bool verifica(pedido pedidos[], int npedidos, int local){
+int **certificados;
+bool verifica(pedido *pedidos, int npedidos, int local){
     for(int i=0; i<npedidos; i++){
         if(pedidos[i].qtd > estoque[local][pedidos[i].livro]){
             return 0;
         }
     }
+    for(int j=0; j<npedidos; j++){
+        estoque[local][pedidos[j].livro] -= pedidos[j].qtd;
+    }
     return 1;
 }
+
 bool agoravai(aresta a, aresta b){
     if(a.custo != b.custo){
         return a.custo < b.custo;
     }
     return a.v < b.v;
 }
-void bubble_up(vector<aresta> &h, int i){
+vector<aresta> h;
+void bubble_up(int i){
     int p = floor((i - 1)/2);
     while(i > 0 && agoravai(h[i], h[p])){
         aresta aux = h[i];
@@ -49,12 +53,12 @@ void bubble_up(vector<aresta> &h, int i){
     }
 }
 
-void heap_insert(vector<aresta> &h, aresta valor){
+void heap_insert(aresta valor){
     h.push_back(valor);
-    bubble_up(h, h.size() - 1);
+    bubble_up(h.size() - 1);
 }
 
-void heapify(vector<aresta> &h, int index){
+void heapify(int index){
     int r = 2*index + 2;
     int l = 2*index + 1;
     int m = index;
@@ -71,43 +75,84 @@ void heapify(vector<aresta> &h, int index){
         aresta aux = h[m];
         h[m] = h[index];
         h[index] = aux;
-        heapify(h, m);
+        heapify(m);
     }
 }
 
-void heap_extract(vector<aresta> &h){
+void heap_extract(){
     h.pop_back();
     aresta aux = h[0];
     h[0] = h[h.size()];
     h[h.size()] = aux;
-    heapify(h, 0);
+    heapify(0);
 }
 
-bool compare(disti a, disti b){
-    return a.d < b.d;
-}
-
-void dijkstra(int s, pedido pedidos[], int npedidos){
+void dijkstra(int s, pedido *pedidos, int npedidos){
     int vertices = grafo.size();
     vector<disti> dist(vertices);
     int precessor[vertices];
-
+    bool visitado[vertices];
     for(int i=0; i<vertices; i++){
         dist[i].d = MAX;
         dist[i].i = i;
         precessor[i] = -1;
+        visitado[i] == false;
     }
-
+    h.clear();
     dist[s].d = 0;
-    vector<aresta> minHeap;
-    heap_insert(minHeap, {0,s,0,0,0});
+    heap_insert({0,s,0,0,0});
 
-    for(int h=0; h<vertices; h++){
-        if(minHeap.size() == 0){
+    for(int ha=0; ha<vertices; ha++){
+        if(h.size() == 0){
             break;
         }
-        aresta removido = minHeap[0];
-        heap_extract(minHeap);
+        aresta removido = h[0];
+        heap_extract();
+        if(dist[removido.v].d < removido.custo){
+            continue;
+        }
+        if(removido.v != s){
+            if(verifica(pedidos, npedidos, removido.v)){
+                int pre = removido.v;
+                for(int j=0; j<vertices; j++){
+                    if(pre != -1){
+                        cout << pre << ' ';
+                        pre = precessor[pre];
+                    }
+                    else{
+                        break;
+                    }
+                }
+
+                
+                cout << removido.custo << endl;
+                return;
+            }
+        }
+        for(int e=0; e<grafo[removido.v].size(); e++){
+            int para = grafo[removido.v][e].v;
+            if(grafo[removido.v][e].coeficiente != certificados[removido.v][grafo[removido.v][e].v] && certificados[removido.v][grafo[removido.v][e].v] != -1){
+
+                grafo[removido.v][e].coeficiente = certificados[removido.v][grafo[removido.v][e].v];
+                grafo[removido.v][e].custo = grafo[removido.v][e].distancia*(100 + certificados[removido.v][grafo[removido.v][e].v])/100;
+        
+            }
+            if(dist[para].d > removido.custo + grafo[removido.v][e].custo){
+
+                dist[para].d = removido.custo + grafo[removido.v][e].custo;
+                precessor[para] = removido.v;
+
+                aresta a;
+                a.v = para;
+                a.custo = dist[para].d;
+
+                heap_insert(a);
+            }
+        }
+    }
+    while(h.size() != 0){
+        aresta removido = h[0];
+        heap_extract();
         if(verifica(pedidos, npedidos, removido.v)){
             int pre = removido.v;
             for(int j=0; j<vertices; j++){
@@ -119,29 +164,8 @@ void dijkstra(int s, pedido pedidos[], int npedidos){
                     break;
                 }
             }
-
-            for(int j=0; j<npedidos; j++){
-                estoque[removido.v][pedidos[j].livro] -= pedidos[j].qtd;
-            }
             cout << removido.custo << endl;
             return;
-        }
-        if(dist[removido.v].d < removido.custo){
-            continue;
-        }
-        for(int e=0; e<grafo[removido.v].size(); e++){
-            int para = grafo[removido.v][e].v;
-            if(dist[para].d > removido.custo + grafo[removido.v][e].custo){
-
-                dist[para].d = removido.custo + grafo[removido.v][e].custo;
-                precessor[para] = removido.v;
-
-                aresta a;
-                a.v = para;
-                a.custo = dist[para].d;
-
-                heap_insert(minHeap, a);
-            }
         }
     }
     cout << "OOS" << endl;
@@ -151,17 +175,24 @@ int main(){
     int v, e, b;
     cin >> v >> e >> b;
     estoque = new int*[v];
- 
+    certificados = new int*[v];
     grafo.resize(v);
-    
+    for(int i=0; i<v; i++){
+        certificados[i] = new int[v];
+        for(int j=0; j<v; j++){
+            certificados[i][j] = -1;
+        }
+    }
     for(int i=0; i<e; i++){
         int x, y;
         cin >> x >> y;
         aresta a;
         cin >> a.distancia >> a.coeficiente;
+        a.custo = floor((a.distancia*(100 + a.coeficiente))/100);
+        certificados[x][y] = a.coeficiente;
+        certificados[y][x] = a.coeficiente;
         a.u = x;
         a.v = y;
-        a.custo = floor((a.distancia*(100 + a.coeficiente))/100);
         grafo[x].push_back(a);
         a.v = x;
         a.u = y;
@@ -203,20 +234,8 @@ int main(){
             else if(oper == "UPD"){
                 int x, y, w;
                 cin >> x >> y >> w;
-                for(int i=0; i<grafo[x].size(); i++){
-                    if(grafo[x][i].v == y){
-                        grafo[x][i].coeficiente = w;
-                        grafo[x][i].custo = grafo[x][i].distancia*(100 + w)/100;
-                        break;
-                    }
-                }
-                for(int i=0; i<grafo[y].size(); i++){
-                    if(grafo[y][i].v == x){
-                        grafo[y][i].coeficiente = w;
-                        grafo[y][i].custo = grafo[y][i].distancia*(100 + w)/100;
-                        break;
-                    }
-                }
+                certificados[x][y] = w;
+                certificados[y][x] = w;
             }
             else if(oper == "STK"){
                 int x, i, q;
