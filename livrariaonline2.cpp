@@ -89,70 +89,6 @@ void heap_extract(){
 bool compare(disti a, disti b){
     return a.d < b.d;
 }
-void dijkstra(int s, pedido *pedidos, int npedidos){
-    int vertices = grafo.size();
-    vector<disti> dist(vertices);
-    int precessor[vertices];
-    bool visitado[vertices];
-    for(int i=0; i<vertices; i++){
-        dist[i].d = MAX;
-        dist[i].i = i;
-        precessor[i] = -1;
-        visitado[i] == false;
-    }
-    h.clear();
-    dist[s].d = 0;
-    heap_insert({0,s,0,0,0});
-
-    for(int ha=0; ha<vertices; ha++){
-        if(h.size() == 0){
-            break;
-        }
-        aresta removido = h[0];
-        heap_extract();
-        if(dist[removido.v].d < removido.custo){
-            continue;
-        }
-        for(int e=0; e<grafo[removido.v].size(); e++){
-            int para = grafo[removido.v][e].v;
-            if(grafo[removido.v][e].coeficiente != certificados[removido.v][grafo[removido.v][e].v] && certificados[removido.v][grafo[removido.v][e].v] != -1){
-
-                grafo[removido.v][e].coeficiente = certificados[removido.v][grafo[removido.v][e].v];
-                grafo[removido.v][e].custo = grafo[removido.v][e].distancia*(100 + certificados[removido.v][grafo[removido.v][e].v])/100;
-        
-            }
-            if(dist[para].d > removido.custo + grafo[removido.v][e].custo){
-
-                dist[para].d = removido.custo + grafo[removido.v][e].custo;
-                precessor[para] = removido.v;
-
-                aresta a;
-                a.v = para;
-                a.custo = dist[para].d;
-
-                heap_insert(a);
-            }
-        }
-    }
-    sort(dist.begin(), dist.end(), compare);
-    for(int i=0; i<vertices; i++){
-        if(verifica(pedidos, npedidos, dist[i].i)){
-            int pre = dist[i].i;
-            for(int j=0; j<vertices; j++){
-                if(pre != -1){
-                    cout << pre  << ' ';
-                    pre = precessor[pre];
-                }
-                else{
-                    break;
-                }
-            }
-            cout << dist[i].d << endl;
-            return;
-        }
-    }
-    cout << "OOS" << endl;
-}
 
 int main(){
     ios::sync_with_stdio(false);
@@ -196,24 +132,88 @@ int main(){
         cin >> oper;
         if(oper != "END"){
             if(oper == "ORD"){
-                int local, npedidos;
-                cin >> local >> npedidos;
+                int s, npedidos;
+                cin >> s >> npedidos;
                 pedido livros[npedidos];
                 int foi = 1;
                 for(int i=0; i<npedidos; i++){
                     cin >> livros[i].livro >> livros[i].qtd;
-                    if(livros[i].qtd > estoque[local][livros[i].livro]){
+                    if(livros[i].qtd > estoque[s][livros[i].livro]){
                         foi = 0;
                     }
                 }
                 if(foi){
-                    cout << local << " 0" << endl;
+                    cout << s << " 0" << endl;
                     for(int i=0; i<npedidos; i++){
-                        estoque[local][livros[i].livro] -= livros[i].qtd;
+                        estoque[s][livros[i].livro] -= livros[i].qtd;
                     }
                 }
                 else{
-                    dijkstra(local, livros, npedidos);
+                    vector<disti> dist(v);
+                    int precessor[v];
+                    bool visitado[v];
+                    for(int i=0; i<v; i++){
+                        dist[i].d = MAX;
+                        dist[i].i = i;
+                        precessor[i] = -1;
+                        visitado[i] == false;
+                    }
+                    h.clear();
+                    dist[s].d = 0;
+                    heap_insert({0,s,0,0,0});
+
+                    for(int ha=0; ha<v; ha++){
+                        if(h.size() == 0){
+                            break;
+                        }
+                        aresta removido = h[0];
+                        heap_extract();
+                        if(dist[removido.v].d < removido.custo){
+                            continue;
+                        }
+                        for(int e=0; e<grafo[removido.v].size(); e++){
+                            int para = grafo[removido.v][e].v;
+                            if(grafo[removido.v][e].coeficiente != certificados[removido.v][grafo[removido.v][e].v] && certificados[removido.v][grafo[removido.v][e].v] != -1){
+
+                                grafo[removido.v][e].coeficiente = certificados[removido.v][grafo[removido.v][e].v];
+                                grafo[removido.v][e].custo = grafo[removido.v][e].distancia*(100 + certificados[removido.v][grafo[removido.v][e].v])/100;
+                        
+                            }
+                            if(dist[para].d > removido.custo + grafo[removido.v][e].custo){
+
+                                dist[para].d = removido.custo + grafo[removido.v][e].custo;
+                                precessor[para] = removido.v;
+
+                                aresta a;
+                                a.v = para;
+                                a.custo = dist[para].d;
+
+                                heap_insert(a);
+                            }
+                        }
+                    }
+                    sort(dist.begin(), dist.end(), compare);
+                    bool pri = true;
+                    for(int i=1; i<v; i++){
+                        if(verifica(livros, npedidos, dist[i].i)){
+                            int pre = dist[i].i;
+                            for(int j=0; j<v; j++){
+                                if(pre != -1){
+                                    cout << pre  << ' ';
+                                    pre = precessor[pre];
+                                }
+                                else{
+                                    break;
+                                }
+                            }
+                            cout << dist[i].d << endl;
+                            pri = false;
+                            break;
+                        }
+                    }
+                    if(pri){
+                        cout << "OOS" << endl;
+                    }
                 }
             }
             else if(oper == "UPD"){
