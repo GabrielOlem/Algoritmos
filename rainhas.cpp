@@ -5,66 +5,47 @@
 using namespace std;
 int c;
 vector<int> damas;
-vector<string> tabuleiro;
+int tabuleiro[100][100];
 void backtracking(int pos,int n){
 	if(pos == n){
         c++;
+        for(int i=0; i<n; i++){
+            for(int j=0; j<n; j++){
+                cout << tabuleiro[i][j] << ' ';   
+            }        
+            cout << endl;
+        }
+        cout << endl;
 	}
     else{
 	    for(int i=0; i<n; i++){
             bool vai = 1;
-            for(int j=0; j<damas.size(); j++){
+            for(int j=0; j<pos; j++){
                 if(i == damas[j] && pos != j){
                     vai = 0;
                     break;
                 }
-                if(!vai){
-                    break;
-                }
-            }
-            int xx = pos;
-            int yy = i;
-            while(1){
-                xx -= 1;
-                yy += 1;
-                if(xx < 0 || yy > n-1) break;
-                if(yy == damas[xx]){
+                if((pos + i) == (j + damas[j]) || (pos - i) == (j - damas[j])){
                     vai = 0;
-                    break;
-                }
-            }
-            xx = pos;
-            yy = i;
-            while(1){
-                xx -= 1;
-                yy -= 1;
-                if(xx < 0 || yy < 0) break;
-                if(yy == damas[xx]){
-                    vai = 0;
-                    break;
+                    break;    
                 }
             }
             if(vai){
                 damas.pb(i);
+                tabuleiro[pos][i] = 1;  
                 backtracking(pos+1, n);
+                tabuleiro[pos][i] = 0;
                 damas.pob();
             }
         }
+        return;
 	}
 }
 
 int main(void){
 	ios::sync_with_stdio(false);
 	cin.tie(0);
-	int k;
-    cin >> k;
-    tabuleiro.resize(k);
-    for(int i=0; i<k; i++){
-        for(int j=0; j<k; j++){
-        tabuleiro[i].push_back('.');
-        }
-    }
-	backtracking(0,k);
+	backtracking(0,15);
     cout << c << endl;
 	return 0;
 }
