@@ -34,7 +34,14 @@ bool verifica(pedido *pedidos, int npedidos, int local){
     }
     return 1;
 }
-
+bool verifica2(pedido *pedidos, int npedidos, int local){
+    for(int i=0; i<npedidos; i++){
+        if(pedidos[i].qtd > estoque[local][pedidos[i].livro]){
+            return 0;
+        }
+    }
+    return 1;
+}
 bool agoravai(aresta a, aresta b){
     if(a.custo != b.custo){
         return a.custo < b.custo;
@@ -142,13 +149,20 @@ int main(){
                         foi = 0;
                     }
                 }
+                bool temEmAlguem = 1;
+                for(int i=0; i<v; i++){
+                    if(verifica2(livros, npedidos, i)){
+                       temEmAlguem = 0;
+                       break;
+                    }
+                }
                 if(foi){
                     cout << s << " 0" << endl;
                     for(int i=0; i<npedidos; i++){
                         estoque[s][livros[i].livro] -= livros[i].qtd;
                     }
                 }
-                else{
+                else if(!temEmAlguem){
                     vector<disti> dist(v);
                     int precessor[v];
                     bool visitado[v];
@@ -161,7 +175,6 @@ int main(){
                     h.clear();
                     dist[s].d = 0;
                     heap_insert({0,s,0,0,0});
-
                     for(int ha=0; ha<v; ha++){
                         if(h.size() == 0){
                             break;
@@ -214,6 +227,9 @@ int main(){
                     if(pri){
                         cout << "OOS" << endl;
                     }
+                }
+                else{
+                  cout << "OOS\n";
                 }
             }
             else if(oper == "UPD"){
