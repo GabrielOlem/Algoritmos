@@ -220,6 +220,6 @@ int main(){
             grafo[i].push_back(a);
         }
     }
-    dijkstra(grafo, 2);
+    FloydWarshall(grafo);
     return 0;
 }

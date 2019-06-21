@@ -116,8 +116,8 @@ int main(){
                 if(!foi){
                     for(int i=0; i<v; i++){
                         if(verifica2(livros, npedidos, i)){
-                        temEmAlguem = 0;
-                        break;
+                            temEmAlguem = 0;
+                            break;
                         }
                     }
                 }
@@ -168,11 +168,7 @@ int main(){
 
                                 dist[para].d = removido.custo + grafo[removido.v][e].custo;
                                 precessor[para] = removido.v;
-
-                                aresta a;
-                                a.v = para;
-                                a.custo = dist[para].d;
-                                h.push_back(a);
+                                h.push_back({para, dist[para].d, 0});
                                 int i = h.size() - 1;
                                 int p = floor((i - 1)/2);
                                 while(i > 0 && agoravai(h[i], h[p])){
@@ -190,14 +186,9 @@ int main(){
                     for(int i=1; i<v; i++){
                         if(verifica(livros, npedidos, dist[i].i)){
                             int pre = dist[i].i;
-                            for(int j=0; j<v; j++){
-                                if(pre != -1){
+                            while(pre != -1){
                                     cout << pre  << ' ';
                                     pre = precessor[pre];
-                                }
-                                else{
-                                    break;
-                                }
                             }
                             cout << dist[i].d << endl;
                             pri = false;
