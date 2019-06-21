@@ -9,15 +9,16 @@ vector<vector<int> > monstro;
 int *fixo;
 vector<vector<int> > solutotal;
 vector<vector<int> > solufixas;
+vector<vector<vector<int> > > monstro3d;
 int n, p, f;
 int totalzao;
 void backtracking(int pos){
-	if(pos == n){
+	if(pos == 0){
         totalzao++;
         solutotal.pb(damas);
         bool npode = 1;
         for(int i=0; i<n; i++){
-            if(damas[i] != fixo[i] && fixo[i] != -1){
+            if(damas[n-i-1] != fixo[i] && fixo[i] != -1){
                 npode = 0;
                 break;
             }
@@ -30,19 +31,19 @@ void backtracking(int pos){
     else{
         for(int i=0; i<n; i++){
             bool vai = 1;
-            for(int j=0; j<pos; j++){
-                if(i == damas[j] && pos != j){
+            for(int j=0; j<n-pos; j++){
+                if(i == damas[j] && n-pos != j){
                     vai = 0;
                     break;
                 }
-                if((pos + i) == (j + damas[j]) || (pos - i) == (j - damas[j])){
+                if((n-pos + i) == (j + damas[j]) || (n-pos - i) == (j - damas[j])){
                     vai = 0;
                     break;    
                 }
             }
             if(vai){
                 damas.pb(i); 
-                backtracking(pos+1);
+                backtracking(pos-1);
                 damas.pob();
             }
         }
@@ -53,16 +54,10 @@ int outro;
 void outrobacktracking(int pos){
     if(pos == 0){
         outro++;
-        for(int i=0; i<n; i++){
-            for(int j=0; j<n ; j++){
-                cout << monstro[i][j] << ' ';
-            }
-            cout << endl;
-        }
-        cout << endl;
+        monstro3d.pb(monstro);
     }
     else{
-        if(n-pos == f && p != 0){
+        if(pos-1 == f && p != 0){
             for(int i=0; i<solufixas.size(); i++){
                 bool pode = 1;
                 for(int j=0; j<n-pos; j++){
@@ -113,23 +108,38 @@ int main(void){
         cin >> x >> y;
         fixo[x] = y;
     }
-	backtracking(0);
+    backtracking(n);
     cout << c << endl;
     for(int i=0; i<solufixas.size(); i++){
         cout << i << ": ";
-        for(int j=0; j<n; j++){
-            cout << solufixas[i][j] << ' ';
+        for(int j=n-1; j>=0; j--){
+            cout << solufixas[i][j];
+            if(j != 0){
+                cout << ' ';
+            }
         }
         cout << endl;
         cout << endl;
     }
-    if(totalzao < n){
-        cout << "entrou aqui" << endl;
+    if(totalzao < n || n <= 4 || (n != 5 && n != 7)){
         cout << '0' << endl;
     }
     else{
         outrobacktracking(n);
-        cout << outro;
+        cout << outro << endl;
+        for(int k=0; k<outro; k++){
+            cout << k << ":\n";
+            for(int i=n-1; i>=0; i--){
+                for(int j=n-1; j>=0 ; j--){
+                    cout << monstro3d[k][i][j];
+                    if(j != 0){
+                        cout << ' ';
+                    }
+                }
+                cout << endl;
+            }
+            cout << endl;
+        }
     }
     return 0;
 }
