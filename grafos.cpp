@@ -86,11 +86,10 @@ void BellmanFord(vector<vector<aresta> > &grafo, int s){//Funciona com pesos neg
     for(int k=1; k<vertices; k++){
         for(int u=0; u<vertices; u++){
             for(int j=0; j<grafo[u].size(); j++){
-                int de = grafo[u][j].u;
                 int para = grafo[u][j].v;
                 int peso = grafo[u][j].peso;
-                if(dist[de] + peso < dist[para]){
-                    dist[para] = dist[de] + peso;
+                if(dist[u] + peso < dist[para]){
+                    dist[para] = dist[u] + peso;
                 }
             }
         }
@@ -141,6 +140,68 @@ void FloydWarshall(vector<vector<aresta> > &grafo){
         cout << endl;
     }
 }
+void bubble_up(vector<aresta> &h, int i){
+    int p = floor((i - 1)/2);
+    while(i > 0 && h[i].peso <= h[p].peso){
+        aresta aux = h[i];
+        h[i] = h[p];
+        h[p] = aux;
+        i = p;
+        p = floor((i - 1)/2);
+    }
+}
+void heap_insert(vector<aresta> &h, aresta valor){
+    h.push_back(valor);
+    bubble_up(h, h.size() - 1);
+}
+void heapify(vector<aresta> &h, int index){
+    int r = 2*index + 2;
+    int l = 2*index + 1;
+    int m = index;
+    if(l < h.size() && h[l].peso >= h[m].peso){
+        m = l;
+    }
+    if(r < h.size() && h[r].peso >= h[m].peso){
+        m = r;
+    }
+    if(m != index){
+        aresta aux = h[m];
+        h[m] = h[index];
+        h[index] = aux;
+        heapify(h, m);
+    }
+}
+void heap_extract(vector<aresta> &h){
+    h.pop_back();
+    aresta aux = h[0];
+    h[0] = h[h.size()];
+    h[h.size()] = aux;
+    heapify(h, 0);
+}
+void dijkstra(vector<vector<aresta> > &grafo, int s){
+    int vertices = grafo.size();
+    int dist[vertices];
+    for(int i=0; i<vertices; i++){
+        dist[i] = MAX;
+    }
+    dist[s] = 0;
+    vector<aresta> minHeap;
+    heap_insert(minHeap, {0,s,0});
+    for(int h=0; h<vertices; h++){
+        aresta removido = minHeap[0];
+        heap_extract(minHeap);
+        for(int e=0; e<grafo[removido.v].size(); e++){
+            int para = grafo[removido.v][e].v;
+            if(dist[para] > removido.peso + grafo[removido.v][e].peso){
+                dist[para] = removido.peso + grafo[removido.v][e].peso;
+                heap_insert(minHeap, {0, grafo[removido.v][e].v, dist[grafo[removido.v][e].v]});
+            }
+        }
+    }
+    for(int i=0; i<vertices; i++){
+        cout << dist[i] << ' ';
+    }
+}
 int main(){
     vector<vector<aresta> > grafo;
     int n;
@@ -159,11 +220,6 @@ int main(){
             grafo[i].push_back(a);
         }
     }
-    for(int i=0; i<grafo.size(); i++){
-        BellmanFord(grafo, i);
-        cout << endl;
-    }
-    cout << endl;
-    FloydWarshall(grafo);
+    dijkstra(grafo, 2);
     return 0;
 }

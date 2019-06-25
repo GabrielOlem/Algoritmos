@@ -29,6 +29,7 @@ vector<int> pegaCertificado(int id){
             return permutacoes[i];
         }
     }
+    return permutacoes[0];
 }
 int find(int a){
     if(pais[a] == a){
@@ -75,6 +76,13 @@ int main(){
             base[i] = base[i-1] + 1;
         }
     }
+    for(int i=0; i<permutacoes.size(); i++){
+        for(int j=0; j<k; j++){
+            cout << permutacoes[i][j] << ' ';
+        }
+        cout << endl;
+    }
+    return 0;
     for(int i=0; i<q; i++){
         int idA, idB;
         cin >> idA >> idB;
